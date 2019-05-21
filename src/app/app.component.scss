@@ -8,7 +8,7 @@ p {
   height: 400px;
 
   button {
-    width: 90%;
+    width: 89%;
     height: 40px;
   }
 }
@@ -44,9 +44,10 @@ canvas:hover {
   pointer-events: none;
   background-color: blue;
 }
+
 /* high-performance display:none; helper */
 .gu-hide {
-  left: -9999px !important;
+  display: none;
 }
 /* added to mirrorContainer (default = body) while dragging */
 .gu-unselectable {
@@ -59,7 +60,7 @@ canvas:hover {
 .gu-transit {
   opacity: 1;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
-  //   background-color: blue;
-  //   filter: alpha(opacity=20);
-  //   background-color: transparent;
+  background-color: blue;
+  filter: alpha(opacity=20);
+  background-color: transparent;
 }

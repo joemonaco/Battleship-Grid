@@ -1,6 +1,5 @@
 import { Component, ViewChild, ElementRef, AfterViewInit } from "@angular/core";
 import { Tile } from "../app/tile";
-import { ShipTile } from "../app/ship-tile";
 import { DragulaService } from "ng2-dragula";
 
 @Component({
@@ -155,7 +154,7 @@ export class AppComponent implements AfterViewInit {
   // }
 
   mouseDrop(e) {
-    if (!this.ready) {
+    if (!this.ready && this.didSelect) {
       console.log("drop");
       // this.context.fillStyle = "blue";
       this.didDrop = true;
@@ -218,14 +217,6 @@ export class AppComponent implements AfterViewInit {
 
       console.log(this.shipRow);
       console.log(this.shipCol);
-
-      // let tile = this.shipTiles.find(
-      //   selectedTile =>
-      //     selectedTile.row == this.shipRow && selectedTile.col == this.shipCol
-      // );
-
-      // this.selectedIndex = tile.index;
-      // console.log()
     }
   }
 
