@@ -1,0 +1,113 @@
+<div class="container">
+  <div>
+    <canvas
+      #canvasEl
+      width="400"
+      height="400"
+      (mousemove)="hovering($event)"
+      (mouseup)="mouseDrop($event)"
+    ></canvas>
+    <button (click)="readyUp()">READY</button>
+  </div>
+
+  <div class="ship-container">
+    <div dragula="ship">
+      <canvas
+        class="ship"
+        #shipEl1
+        width="40"
+        height="160"
+        (mousedown)="shipClicked($event, 4, true)"
+      ></canvas>
+    </div>
+
+    <div dragula="ship">
+      <canvas
+        class="ship"
+        #shipEl2
+        width="160"
+        height="40"
+        (mousedown)="shipClicked($event, 4, false)"
+      ></canvas>
+    </div>
+
+    <div dragula="ship">
+      <canvas
+        class="ship"
+        #shipEl1
+        width="40"
+        height="120"
+        (mousedown)="shipClicked($event, 3, true)"
+      ></canvas>
+    </div>
+
+    <div dragula="ship">
+      <canvas
+        class="ship"
+        #shipEl2
+        width="120"
+        height="40"
+        (mousedown)="shipClicked($event, 3, false)"
+      ></canvas>
+    </div>
+
+    <div dragula="ship">
+      <canvas
+        class="ship"
+        #shipEl2
+        width="40"
+        height="120"
+        (mousedown)="shipClicked($event, 3, true)"
+      ></canvas>
+    </div>
+
+    <div dragula="ship">
+      <canvas
+        class="ship"
+        #shipEl2
+        width="80"
+        height="40"
+        (mousedown)="shipClicked($event, 2, false)"
+      ></canvas>
+    </div>
+
+    <div dragula="ship">
+      <canvas
+        class="ship"
+        #shipEl2
+        width="40"
+        height="80"
+        (mousedown)="shipClicked($event, 2, true)"
+      ></canvas>
+    </div>
+    <div dragula="ship">
+      <canvas
+        class="ship"
+        #shipEl2
+        width="80"
+        height="40"
+        (mousedown)="shipClicked($event, 2, false)"
+      ></canvas>
+    </div>
+
+    <div dragula="ship">
+      <canvas
+        class="ship"
+        #shipEl2
+        width="40"
+        height="80"
+        (mousedown)="shipClicked($event, 2, true)"
+      ></canvas>
+    </div>
+
+    <div dragula="ship">
+      <canvas
+        class="ship"
+        #shipEl2
+        width="200"
+        height="40"
+        (mousedown)="shipClicked($event, 5, false)"
+      ></canvas>
+    </div>
+  </div>
+</div>

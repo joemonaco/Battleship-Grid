@@ -1,0 +1,65 @@
+p {
+  font-family: Lato;
+}
+
+.container {
+  display: flex;
+  width: 400px;
+  height: 400px;
+
+  button {
+    width: 90%;
+    height: 40px;
+  }
+}
+
+.ship {
+  background-color: blue;
+}
+
+.ship-container {
+  // flex-shrink: 50%;
+  // // width: 75%;
+}
+
+canvas {
+  margin-right: 50px;
+  border: 2px solid black;
+  transition: 300ms;
+  border-radius: 4px;
+}
+
+canvas:hover {
+  border: 2px solid rgba(0, 0, 0, 0.54);
+}
+
+/* in-flight clone */
+.gu-mirror {
+  position: fixed !important;
+  margin: 0 !important;
+  z-index: 9999 !important;
+  opacity: 1;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+  //   filter: alpha(opacity=200);
+  pointer-events: none;
+  background-color: blue;
+}
+/* high-performance display:none; helper */
+.gu-hide {
+  left: -9999px !important;
+}
+/* added to mirrorContainer (default = body) while dragging */
+.gu-unselectable {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+}
+/* added to the source element while its mirror is dragged */
+.gu-transit {
+  opacity: 1;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+  //   background-color: blue;
+  //   filter: alpha(opacity=20);
+  //   background-color: transparent;
+}
