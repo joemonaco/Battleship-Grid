@@ -28,7 +28,7 @@ export class AppComponent implements AfterViewInit {
         return false;
       },
       invalid: function(el, handle) {
-        if (el.id == "board") {
+        if (el.id == "board" || el.id == "rdyBtn") {
           return true;
         }
         return false; // don't prevent any drags from initiating by default
@@ -131,71 +131,54 @@ export class AppComponent implements AfterViewInit {
       );
 
       if (!this.checkTiles(tile)) {
+        console.log("checkTiles false");
         this.dragulaService.find("ship").drake.cancel(true);
       } else {
         // console.log(tile.isHighlighted);
 
-        let wasHighlighted = tile.isHighlighted;
-        if (tile.isHighlighted) {
-          this.canDrop = false;
-          this.dragulaService.find("ship").drake.cancel(true);
-        } else {
-          this.canDrop = true;
-        }
+        // if (!wasHighlighted) {
+        //Get index for mainTiles array to be able to add to shipTiles later
+        let firstTileIndex = this.mainTiles.indexOf(tile);
+        console.log("firstIndex: " + firstTileIndex);
 
-        if (!wasHighlighted) {
-          //Get index for mainTiles array to be able to add to shipTiles later
-          let firstTileIndex = this.mainTiles.indexOf(tile);
-          console.log("firstIndex: " + firstTileIndex);
+        tile.isHighlighted = true;
+        this.context.fillStyle = "blue";
 
-          tile.isHighlighted = true;
-          this.context.fillStyle = "blue";
-
-          if (this.curShipVertical) {
-            this.context.fillRect(
-              tile.topX,
-              tile.topY,
-              40,
-              40 * this.curShipLen
-            );
-            for (let i = 0; i < this.curShipLen; i++) {
-              this.shipTiles.push(this.mainTiles[firstTileIndex + i]);
-              this.mainTiles[firstTileIndex + i].isHighlighted = true;
-            }
-          } else {
-            this.context.fillRect(
-              tile.topX,
-              tile.topY,
-              40 * this.curShipLen,
-              40
-            );
-
-            //Use 11 because 10x10 grid and every 11 is a new column but same row
-            let indexOffset = 11;
-            for (let i = 0; i < this.curShipLen; i++) {
-              this.shipTiles.push(this.mainTiles[firstTileIndex + indexOffset]);
-              this.mainTiles[firstTileIndex + indexOffset].isHighlighted = true;
-              indexOffset += 11;
-            }
+        if (this.curShipVertical) {
+          this.context.fillRect(tile.topX, tile.topY, 40, 40 * this.curShipLen);
+          for (let i = 0; i < this.curShipLen; i++) {
+            this.shipTiles.push(this.mainTiles[firstTileIndex + i]);
+            this.mainTiles[firstTileIndex + i].isHighlighted = true;
           }
+        } else {
+          this.context.fillRect(tile.topX, tile.topY, 40 * this.curShipLen, 40);
 
-          this.context.stroke();
+          //Use 11 because 10x10 grid and every 11 is a new column but same row
+          let indexOffset = 11;
+          for (let i = 0; i < this.curShipLen; i++) {
+            this.shipTiles.push(this.mainTiles[firstTileIndex + indexOffset]);
+            this.mainTiles[firstTileIndex + indexOffset].isHighlighted = true;
+            indexOffset += 11;
+          }
         }
-      }
-      this.didDrop = false;
-      this.didSelect = false;
 
-      // if (wasHighlighted) {
-      //   console.log("in was highlighted");
-      //   this.dragulaService.destroy("ship");
-      //   this.dragulaService.createGroup("ship", {
-      //     removeOnSpill: true
-      //   });
+        this.context.stroke();
+      }
+
       // }
     }
+    this.didDrop = false;
+    this.didSelect = false;
   }
 
   checkTiles(tile: Tile): boolean {
+    console.log("in checkTiles");
+
+    if (tile.isHighlighted) {
+      // this.dragulaService.find("ship").drake.cancel(true);
+      console.log("first tile highlighted");
+      return false;
+    }
     let firstTileIndex = this.mainTiles.indexOf(tile);
     if (this.curShipVertical) {
       for (let i = 0; i < this.curShipLen; i++) {
@@ -226,13 +209,13 @@ export class AppComponent implements AfterViewInit {
     if (!this.ready) {
       this.curShipLen = shipLen;
       this.curShipVertical = vert;
-      console.log(event);
+      // console.log(event);
       this.didSelect = !this.didSelect;
       this.shipRow = Math.trunc(event.offsetY / 40);
       this.shipCol = Math.trunc(event.offsetX / 40);
 
-      console.log(this.shipRow);
-      console.log(this.shipCol);
+      // console.log(this.shipRow);
+      // console.log(this.shipCol);
     }
   }
 
