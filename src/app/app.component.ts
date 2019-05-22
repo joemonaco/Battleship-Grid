@@ -300,8 +300,10 @@ export class AppComponent implements AfterViewInit {
           selectedTile.col == this.enemyBoardCol
       );
 
-      this.enemyContext.fillStyle = "white";
-      this.enemyContext.fillRect(tile.topX, tile.topY, 40, 40);
+      if (!tile.isHighlighted) {
+        this.enemyContext.fillStyle = "white";
+        this.enemyContext.fillRect(tile.topX, tile.topY, 40, 40);
+      }
     }
     this.enemyBoardRow = Math.trunc(e.offsetY / 40);
     this.enemyBoardCol = Math.trunc(e.offsetX / 40);
@@ -317,9 +319,11 @@ export class AppComponent implements AfterViewInit {
         selectedTile.col == this.enemyBoardCol
     );
 
-    this.enemyContext.fillStyle = "yellow";
-    this.enemyContext.fillRect(tile.topX, tile.topY, 40, 40);
-    this.enemyContext.stroke();
+    if (!tile.isHighlighted) {
+      this.enemyContext.fillStyle = "yellow";
+      this.enemyContext.fillRect(tile.topX, tile.topY, 40, 40);
+      this.enemyContext.stroke();
+    }
     // }
   }
 
