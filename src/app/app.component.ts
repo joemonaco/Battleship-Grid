@@ -116,6 +116,9 @@ export class AppComponent implements AfterViewInit {
 
   //When user lets go of the ship ontop of the grid
   mouseDrop(e) {
+    console.log(this.curShipLen);
+    console.log(this.curShipVertical);
+
     //Makes sure that ready hasnt been clicked and that a ship is selected
     if (!this.ready && this.didSelect) {
       this.didDrop = true;
@@ -155,7 +158,9 @@ export class AppComponent implements AfterViewInit {
 
           //Use 11 because 10x10 grid and every 11 is a new column but same row
           let indexOffset = 11;
-          for (let i = 0; i < this.curShipLen; i++) {
+          this.shipTiles.push(this.mainTiles[firstTileIndex]);
+          this.mainTiles[firstTileIndex].isHighlighted = true;
+          for (let i = 0; i < this.curShipLen - 1; i++) {
             this.shipTiles.push(this.mainTiles[firstTileIndex + indexOffset]);
             this.mainTiles[firstTileIndex + indexOffset].isHighlighted = true;
             indexOffset += 11;
