@@ -117,5 +117,26 @@
         ></canvas>
       </div>
     </div>
+    <div class="enemy-container">
+      <!-- <div class="nums">
+        <h1>1 2 3 4 5 6 7 8 9 10</h1>
+      </div> -->
+
+      <!-- <div class="main-container">
+            <h1>A B C D E F G H I J</h1> -->
+      <div class="enemy-board">
+        <!-- <h1>1 2 3 4 5 6 7 8 9 10</h1> -->
+        <div dragula="ship">
+          <canvas
+            id="enemyBoard"
+            #enemyEl
+            width="400"
+            height="400"
+            (mouseup)="enemyBoardClicked($event)"
+          ></canvas>
+          <button (click)="fire()" id="fireBtn">FIRE</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

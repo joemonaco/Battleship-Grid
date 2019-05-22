@@ -10,36 +10,50 @@ import { DragulaService } from "ng2-dragula";
 export class AppComponent implements AfterViewInit {
   /** Template reference to the canvas element */
   @ViewChild("canvasEl") canvasEl: ElementRef;
+  @ViewChild("enemyEl") enemyEl: ElementRef;
   // @ViewChild("shipEl1") shipEl1: ElementRef;
   // @ViewChild("shipEl2") shipEl2: ElementRef;
 
   /** Canvas 2d context */
   context: CanvasRenderingContext2D;
-  shipContext1: CanvasRenderingContext2D;
+  enemyContext: CanvasRenderingContext2D;
 
   canDrop = false;
 
   constructor(private dragulaService: DragulaService) {
-    this.dragulaService.createGroup("ship", {
+    dragulaService.createGroup("ship", {
       removeOnSpill: true,
       revertOnSpill: false,
-      accepts: function() {
-        // console.log("in accepts");
+      accepts: function(el, target) {
+        if (target.id == "board") {
+          // console.log("in accepts");
+          return false;
+        }
         return false;
       },
       invalid: function(el, handle) {
-        if (el.id == "board" || el.id == "rdyBtn") {
+        if (
+          el.id == "board" ||
+          el.id == "rdyBtn" ||
+          el.id == "enemyBoard" ||
+          el.id == "fireBtn"
+        ) {
           return true;
         }
         return false; // don't prevent any drags from initiating by default
       }
     });
-
+    // dragulaService.find("ship").drake.on("drop", (el, target) => {
+    //   console.log("target", target);
+    //   console.log("element", el);
+    // });
     // this.dragulaService.
   }
 
   mainTiles: Tile[] = [];
   shipTiles: Tile[] = [];
+  enemyTiles: Tile[] = [];
+  enemyTilesSelected: Tile[] = [];
 
   didDrop: boolean = false;
   curShipLen = 0;
@@ -51,6 +65,9 @@ export class AppComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.context = (this.canvasEl
+      .nativeElement as HTMLCanvasElement).getContext("2d");
+
+    this.enemyContext = (this.enemyEl
       .nativeElement as HTMLCanvasElement).getContext("2d");
 
     this.drawGrid();
@@ -142,7 +159,7 @@ export class AppComponent implements AfterViewInit {
         // if (!wasHighlighted) {
         //Get index for mainTiles array to be able to add to shipTiles later
         let firstTileIndex = this.mainTiles.indexOf(tile);
-        console.log("firstIndex: " + firstTileIndex);
+        // console.log("firstIndex: " + firstTileIndex);
 
         tile.isHighlighted = true;
         this.context.fillStyle = "blue";
@@ -177,18 +194,18 @@ export class AppComponent implements AfterViewInit {
   }
 
   checkTiles(tile: Tile): boolean {
-    console.log("in checkTiles");
+    // console.log("in checkTiles");
 
     if (tile.isHighlighted) {
       // this.dragulaService.find("ship").drake.cancel(true);
-      console.log("first tile highlighted");
+      // console.log("first tile highlighted");
       return false;
     }
     let firstTileIndex = this.mainTiles.indexOf(tile);
     if (this.curShipVertical) {
       for (let i = 0; i < this.curShipLen; i++) {
         if (this.mainTiles[firstTileIndex + i].isHighlighted) {
-          console.log("returning false vertical");
+          // console.log("returning false vertical");
           return false;
         }
       }
@@ -196,13 +213,13 @@ export class AppComponent implements AfterViewInit {
       let indexOffset = 11;
       for (let i = 0; i < this.curShipLen; i++) {
         if (this.mainTiles[firstTileIndex + indexOffset].isHighlighted) {
-          console.log("returning false horizontal");
+          // console.log("returning false horizontal");
           return false;
         }
         indexOffset += 11;
       }
     }
-    console.log("returning true");
+    // console.log("returning true");
     return true;
   }
 
@@ -227,5 +244,86 @@ export class AppComponent implements AfterViewInit {
   readyUp() {
     this.ready = true;
     console.log(this.shipTiles);
+    this.drawEnemyGrid();
+  }
+
+  drawEnemyGrid() {
+    this.enemyEl.nativeElement.height = 400;
+    this.enemyEl.nativeElement.width = 400;
+
+    let row = 0;
+    let col = 0;
+
+    //Makes the rows and columns
+    for (let x = 0; x <= 400; x += 40) {
+      row = 0;
+      for (let y = 0; y <= 400; y += 40) {
+        //Making the "tiles"
+        this.enemyContext.moveTo(x, 0);
+        this.enemyContext.lineTo(x, 400);
+        this.enemyContext.stroke();
+        this.enemyContext.moveTo(0, y);
+        this.enemyContext.lineTo(400, y);
+        this.enemyContext.stroke();
+        //Making a new tile to add to the array of tiles
+        let tile = new Tile();
+        tile.row = row;
+        tile.col = col;
+        tile.topX = x;
+        tile.topY = y;
+        tile.botX = x + 40;
+        tile.botY = y + 40;
+        tile.isHighlighted = false;
+        this.enemyTiles.push(tile);
+        row++;
+      }
+      col++;
+    }
+  }
+
+  enemyBoardRow: number = -1;
+  enemyBoardCol: number = -1;
+  enemySelected = false;
+
+  enemyBoardClicked(e) {
+    // let tile = this.enemyTiles.find(
+    //   selectedTile =>
+    //     selectedTile.row == this.enemyBoardRow &&
+    //     selectedTile.col == this.enemyBoardCol
+    // );
+
+    // if (tile != null && !tile.isHighlighted) {
+    if (this.enemyBoardRow != -1 && this.enemyBoardCol != -1) {
+      let tile = this.enemyTiles.find(
+        selectedTile =>
+          selectedTile.row == this.enemyBoardRow &&
+          selectedTile.col == this.enemyBoardCol
+      );
+
+      this.enemyContext.fillStyle = "white";
+      this.enemyContext.fillRect(tile.topX, tile.topY, 40, 40);
+    }
+    this.enemyBoardRow = Math.trunc(e.offsetY / 40);
+    this.enemyBoardCol = Math.trunc(e.offsetX / 40);
+
+    console.log(this.enemyBoardRow);
+    console.log(this.enemyBoardCol);
+
+    this.enemySelected = true;
+
+    let tile = this.enemyTiles.find(
+      selectedTile =>
+        selectedTile.row == this.enemyBoardRow &&
+        selectedTile.col == this.enemyBoardCol
+    );
+
+    this.enemyContext.fillStyle = "yellow";
+    this.enemyContext.fillRect(tile.topX, tile.topY, 40, 40);
+    this.enemyContext.stroke();
+    // }
+  }
+
+  fire() {
+    // if()
   }
 }

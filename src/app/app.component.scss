@@ -17,6 +17,16 @@ p {
     text-orientation: upright;
     letter-spacing: -7.5px;
   }
+
+  // .enemy-container {
+  //   .nums {
+  //     h1 {
+  //       font-size: 1.5rem;
+  //       margin-left: 70px;
+  //       letter-spacing: 11px;
+  //     }
+  //   }
+  // }
 }
 
 .container {
@@ -27,6 +37,16 @@ p {
   button {
     width: 89%;
     height: 40px;
+  }
+}
+
+.enemy-board {
+  h1 {
+    font-size: 1.5rem;
+    writing-mode: vertical-lr;
+    // margin-top: 1000px;
+    font-size: 1.5rem;
+    letter-spacing: 11px;
   }
 }
 
