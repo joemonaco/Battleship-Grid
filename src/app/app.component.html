@@ -14,105 +14,125 @@
         (mousemove)="hovering($event)"
         (mouseup)="mouseDrop($event)"
       ></canvas>
-      <button (click)="readyUp()" id="rdyBtn">READY</button>
+      <button [disabled]="!ready" (click)="readyUp()" id="rdyBtn">READY</button>
     </div>
 
     <div class="ship-container">
       <div dragula="ship">
         <canvas
+          id="0"
           class="ship"
           #shipEl1
           width="40"
           height="160"
+          [hidden]="hideShip[0]"
           (mousedown)="shipClicked($event, 4, true)"
         ></canvas>
       </div>
 
       <div dragula="ship">
         <canvas
+          id="1"
           class="ship"
           #shipEl2
           width="160"
           height="40"
+          [hidden]="hideShip[1]"
           (mousedown)="shipClicked($event, 4, false)"
         ></canvas>
       </div>
 
       <div dragula="ship">
         <canvas
+          id="2"
           class="ship"
           #shipEl1
           width="40"
           height="120"
+          [hidden]="hideShip[2]"
           (mousedown)="shipClicked($event, 3, true)"
         ></canvas>
       </div>
 
       <div dragula="ship">
         <canvas
+          id="3"
           class="ship"
           #shipEl2
           width="120"
           height="40"
+          [hidden]="hideShip[3]"
           (mousedown)="shipClicked($event, 3, false)"
         ></canvas>
       </div>
 
       <div dragula="ship">
         <canvas
+          id="4"
           class="ship"
           #shipEl2
           width="40"
           height="120"
+          [hidden]="hideShip[4]"
           (mousedown)="shipClicked($event, 3, true)"
         ></canvas>
       </div>
 
       <div dragula="ship">
         <canvas
+          id="5"
           class="ship"
           #shipEl2
           width="80"
           height="40"
+          [hidden]="hideShip[5]"
           (mousedown)="shipClicked($event, 2, false)"
         ></canvas>
       </div>
 
       <div dragula="ship">
         <canvas
+          id="6"
           class="ship"
           #shipEl2
           width="40"
           height="80"
+          [hidden]="hideShip[6]"
           (mousedown)="shipClicked($event, 2, true)"
         ></canvas>
       </div>
       <div dragula="ship">
         <canvas
+          id="7"
           class="ship"
           #shipEl2
           width="80"
           height="40"
+          [hidden]="hideShip[7]"
           (mousedown)="shipClicked($event, 2, false)"
         ></canvas>
       </div>
 
       <div dragula="ship">
         <canvas
+          id="8"
           class="ship"
           #shipEl2
           width="40"
           height="80"
+          [hidden]="hideShip[8]"
           (mousedown)="shipClicked($event, 2, true)"
         ></canvas>
       </div>
 
       <div dragula="ship">
         <canvas
+          id="9"
           class="ship"
           #shipEl2
           width="200"
           height="40"
+          [hidden]="hideShip[9]"
           (mousedown)="shipClicked($event, 5, false)"
         ></canvas>
       </div>

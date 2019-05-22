@@ -11,24 +11,33 @@ export class AppComponent implements AfterViewInit {
   /** Template reference to the canvas element */
   @ViewChild("canvasEl") canvasEl: ElementRef;
   @ViewChild("enemyEl") enemyEl: ElementRef;
-  // @ViewChild("shipEl1") shipEl1: ElementRef;
-  // @ViewChild("shipEl2") shipEl2: ElementRef;
 
   /** Canvas 2d context */
   context: CanvasRenderingContext2D;
   enemyContext: CanvasRenderingContext2D;
 
+  hideShip = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ];
+
+  curShipId = -1;
+
   canDrop = false;
 
   constructor(private dragulaService: DragulaService) {
     dragulaService.createGroup("ship", {
-      removeOnSpill: true,
-      revertOnSpill: false,
+      removeOnSpill: false,
+      revertOnSpill: true,
       accepts: function(el, target) {
-        if (target.id == "board") {
-          // console.log("in accepts");
-          return false;
-        }
         return false;
       },
       invalid: function(el, handle) {
@@ -53,7 +62,7 @@ export class AppComponent implements AfterViewInit {
   mainTiles: Tile[] = [];
   shipTiles: Tile[] = [];
   enemyTiles: Tile[] = [];
-  enemyTilesSelected: Tile[] = [];
+  // enemyTilesSelected: Tile[] = [];
 
   didDrop: boolean = false;
   curShipLen = 0;
@@ -169,6 +178,7 @@ export class AppComponent implements AfterViewInit {
           for (let i = 0; i < this.curShipLen; i++) {
             this.shipTiles.push(this.mainTiles[firstTileIndex + i]);
             this.mainTiles[firstTileIndex + i].isHighlighted = true;
+            this.hideShip[this.curShipId] = true;
           }
         } else {
           this.context.fillRect(tile.topX, tile.topY, 40 * this.curShipLen, 40);
@@ -181,6 +191,7 @@ export class AppComponent implements AfterViewInit {
             this.shipTiles.push(this.mainTiles[firstTileIndex + indexOffset]);
             this.mainTiles[firstTileIndex + indexOffset].isHighlighted = true;
             indexOffset += 11;
+            this.hideShip[this.curShipId] = true;
           }
         }
 
@@ -236,6 +247,9 @@ export class AppComponent implements AfterViewInit {
       this.shipRow = Math.trunc(event.offsetY / 40);
       this.shipCol = Math.trunc(event.offsetX / 40);
 
+      console.log(event.target.id);
+      this.curShipId = event.target.id;
+
       // console.log(this.shipRow);
       // console.log(this.shipCol);
     }
@@ -286,13 +300,6 @@ export class AppComponent implements AfterViewInit {
   enemySelected = false;
 
   enemyBoardClicked(e) {
-    // let tile = this.enemyTiles.find(
-    //   selectedTile =>
-    //     selectedTile.row == this.enemyBoardRow &&
-    //     selectedTile.col == this.enemyBoardCol
-    // );
-
-    // if (tile != null && !tile.isHighlighted) {
     if (this.enemyBoardRow != -1 && this.enemyBoardCol != -1) {
       let tile = this.enemyTiles.find(
         selectedTile =>
@@ -324,7 +331,6 @@ export class AppComponent implements AfterViewInit {
       this.enemyContext.fillRect(tile.topX, tile.topY, 40, 40);
       this.enemyContext.stroke();
     }
-    // }
   }
 
   fire() {
