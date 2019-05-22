@@ -324,6 +324,32 @@ export class AppComponent implements AfterViewInit {
   }
 
   fire() {
-    // if()
+    if (this.enemySelected) {
+      let enemyTile = this.enemyTiles.find(
+        selectedTile =>
+          selectedTile.row == this.enemyBoardRow &&
+          selectedTile.col == this.enemyBoardCol
+      );
+
+      enemyTile.isHighlighted = true;
+
+      let shipTile = this.shipTiles.find(
+        selectedTile =>
+          selectedTile.row == this.enemyBoardRow &&
+          selectedTile.col == this.enemyBoardCol
+      );
+
+      if (shipTile != null) {
+        console.log("hit");
+        this.enemyContext.fillStyle = "red";
+        this.enemyContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
+        this.enemyContext.stroke();
+      } else {
+        console.log("hit");
+        this.enemyContext.fillStyle = "lightblue";
+        this.enemyContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
+        this.enemyContext.stroke();
+      }
+    }
   }
 }
