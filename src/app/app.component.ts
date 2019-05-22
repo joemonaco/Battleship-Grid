@@ -39,7 +39,6 @@ export class AppComponent implements AfterViewInit {
       .nativeElement as HTMLCanvasElement).getContext("2d");
 
     this.drawGrid();
-    // this.drawShips();
 
     console.log(this.mainTiles);
   }
@@ -54,15 +53,18 @@ export class AppComponent implements AfterViewInit {
     let row = 0;
     let col = 0;
 
+    //Makes the rows and columns
     for (let x = 0; x <= 400; x += 40) {
       row = 0;
       for (let y = 0; y <= 400; y += 40) {
+        //Making the "tiles"
         this.context.moveTo(x, 0);
         this.context.lineTo(x, 400);
         this.context.stroke();
         this.context.moveTo(0, y);
         this.context.lineTo(400, y);
         this.context.stroke();
+        //Making a new tile to add to the array of tiles
         let tile = new Tile();
         tile.row = row;
         tile.col = col;
@@ -77,39 +79,6 @@ export class AppComponent implements AfterViewInit {
       col++;
     }
   }
-
-  // drawShips() {
-  //   this.shipEl1.nativeElement.height = 160;
-  //   this.shipEl1.nativeElement.width = 40;
-
-  //   var curIndex = 0;
-
-  //   let row = 0;
-  //   let col = 0;
-
-  //   for (var x = 0; x <= 40; x += 40) {
-  //     row = 0;
-  //     for (var y = 0; y <= 160; y += 40) {
-  //       this.shipContext1.moveTo(x, 0);
-  //       this.shipContext1.lineTo(x, 40);
-  //       this.shipContext1.stroke();
-  //       this.shipContext1.moveTo(0, y);
-  //       this.shipContext1.lineTo(40, y);
-  //       this.shipContext1.stroke();
-  //       this.shipContext1.fillStyle = "blue";
-  //       let shipTile = new ShipTile();
-  //       shipTile.isVertical = false;
-  //       shipTile.index = curIndex;
-  //       shipTile.size = 4;
-  //       shipTile.row = row;
-  //       shipTile.col = col;
-  //       this.ship1Tiles.push(shipTile);
-  //       this.shipContext1.fillRect(x, y, x + 40, y + 40);
-  //       row++;
-  //     }
-  //     col++;
-  //   }
-  // }
 
   hoveredRow: number = 0;
   hoveredCol: number = 0;
@@ -127,61 +96,32 @@ export class AppComponent implements AfterViewInit {
           selectedTile.row == this.hoveredRow &&
           selectedTile.col == this.hoveredCol
       );
-
-      // if (!tile.isHighlighted) {
-      //   this.unHighlight();
-      // tile.isHighlighted = true;
-      // this.context.moveTo(tile.topX, 0);
-      // this.context.lineTo(tile.topX, 600);
-      // this.context.stroke();
-      // this.context.moveTo(0, tile.topY);
-      // this.context.lineTo(600, tile.topY);
-      // this.context.stroke();
-      // this.context.fillStyle = "lightgray";
-      // this.context.fillRect(tile.topX, tile.topY, 40, 40 * 4);
-      // }
     }
   }
 
-  // unHighlight() {
-  //   let tile = this.mainTiles.find(selectedTile => selectedTile.isHighlighted);
-
-  //   if (tile != null) {
-  //     tile.isHighlighted = false;
-  //     this.context.fillStyle = "white";
-  //     this.context.fillRect(tile.topX, tile.topY, 40, 40 * 4);
-  //   }
-  // }
-
+  //When user lets go of the ship ontop of the grid
   mouseDrop(e) {
+    //Makes sure that ready hasnt been clicked and that a ship is selected
     if (!this.ready && this.didSelect) {
-      console.log("drop");
-      // this.context.fillStyle = "blue";
       this.didDrop = true;
 
+      //Each tile is 40x40 so get the offset of canvas to give row and col of where mouse is
       let dropRow = Math.trunc(e.offsetY / 40);
       let dropCol = Math.trunc(e.offsetX / 40);
 
-      console.log("dropRow: ", dropRow);
-      console.log("dropCols: ", dropCol);
-
+      //Find the tile on main board of where its dropped
       let tile = this.mainTiles.find(
         selectedTile =>
           selectedTile.row == dropRow && selectedTile.col == dropCol
       );
+
+      //Get index for mainTiles array to be able to add to shipTiles later
       let firstTileIndex = this.mainTiles.indexOf(tile);
       console.log("firstIndex: " + firstTileIndex);
 
-      // if (!tile.isHighlighted) {
-      // this.unHighlight();
       tile.isHighlighted = true;
-      this.context.moveTo(tile.topX, 0);
-      this.context.lineTo(tile.topX, 400);
-      this.context.stroke();
-      this.context.moveTo(0, tile.topY);
-      this.context.lineTo(400, tile.topY);
-      this.context.stroke();
       this.context.fillStyle = "blue";
+
       if (this.curShipVertical) {
         this.context.fillRect(tile.topX, tile.topY, 40, 40 * this.curShipLen);
         for (let i = 0; i < this.curShipLen; i++) {
@@ -189,13 +129,16 @@ export class AppComponent implements AfterViewInit {
         }
       } else {
         this.context.fillRect(tile.topX, tile.topY, 40 * this.curShipLen, 40);
+
+        //Use 11 because 10x10 grid and every 11 is a new column but same row
         let indexOffset = 11;
         for (let i = 0; i < this.curShipLen; i++) {
           this.shipTiles.push(this.mainTiles[firstTileIndex + indexOffset]);
           indexOffset += 11;
         }
       }
-      // }
+
+      this.context.stroke();
 
       this.didDrop = false;
       this.didSelect = false;
