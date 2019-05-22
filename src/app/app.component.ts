@@ -10,17 +10,32 @@ import { DragulaService } from "ng2-dragula";
 export class AppComponent implements AfterViewInit {
   /** Template reference to the canvas element */
   @ViewChild("canvasEl") canvasEl: ElementRef;
-  @ViewChild("shipEl1") shipEl1: ElementRef;
-  @ViewChild("shipEl2") shipEl2: ElementRef;
+  // @ViewChild("shipEl1") shipEl1: ElementRef;
+  // @ViewChild("shipEl2") shipEl2: ElementRef;
 
   /** Canvas 2d context */
   context: CanvasRenderingContext2D;
   shipContext1: CanvasRenderingContext2D;
 
+  canDrop = false;
+
   constructor(private dragulaService: DragulaService) {
-    dragulaService.createGroup("ship", {
-      removeOnSpill: true
+    this.dragulaService.createGroup("ship", {
+      removeOnSpill: true,
+      revertOnSpill: false,
+      accepts: function() {
+        // console.log("in accepts");
+        return false;
+      },
+      invalid: function(el, handle) {
+        if (el.id == "board") {
+          return true;
+        }
+        return false; // don't prevent any drags from initiating by default
+      }
     });
+
+    // this.dragulaService.
   }
 
   mainTiles: Tile[] = [];
@@ -88,8 +103,8 @@ export class AppComponent implements AfterViewInit {
       this.hoveredRow = Math.trunc(event.offsetY / 40);
       this.hoveredCol = Math.trunc(event.offsetX / 40);
 
-      console.log("hoveredRow: ", this.hoveredRow);
-      console.log("hoveredCol: ", this.hoveredCol);
+      // console.log("hoveredRow: ", this.hoveredRow);
+      // console.log("hoveredCol: ", this.hoveredCol);
 
       let tile = this.mainTiles.find(
         selectedTile =>
@@ -115,34 +130,92 @@ export class AppComponent implements AfterViewInit {
           selectedTile.row == dropRow && selectedTile.col == dropCol
       );
 
-      //Get index for mainTiles array to be able to add to shipTiles later
-      let firstTileIndex = this.mainTiles.indexOf(tile);
-      console.log("firstIndex: " + firstTileIndex);
-
-      tile.isHighlighted = true;
-      this.context.fillStyle = "blue";
-
-      if (this.curShipVertical) {
-        this.context.fillRect(tile.topX, tile.topY, 40, 40 * this.curShipLen);
-        for (let i = 0; i < this.curShipLen; i++) {
-          this.shipTiles.push(this.mainTiles[firstTileIndex + i]);
-        }
+      if (!this.checkTiles(tile)) {
+        this.dragulaService.find("ship").drake.cancel(true);
       } else {
-        this.context.fillRect(tile.topX, tile.topY, 40 * this.curShipLen, 40);
+        // console.log(tile.isHighlighted);
 
-        //Use 11 because 10x10 grid and every 11 is a new column but same row
-        let indexOffset = 11;
-        for (let i = 0; i < this.curShipLen; i++) {
-          this.shipTiles.push(this.mainTiles[firstTileIndex + indexOffset]);
-          indexOffset += 11;
+        let wasHighlighted = tile.isHighlighted;
+        if (tile.isHighlighted) {
+          this.canDrop = false;
+          this.dragulaService.find("ship").drake.cancel(true);
+        } else {
+          this.canDrop = true;
+        }
+
+        if (!wasHighlighted) {
+          //Get index for mainTiles array to be able to add to shipTiles later
+          let firstTileIndex = this.mainTiles.indexOf(tile);
+          console.log("firstIndex: " + firstTileIndex);
+
+          tile.isHighlighted = true;
+          this.context.fillStyle = "blue";
+
+          if (this.curShipVertical) {
+            this.context.fillRect(
+              tile.topX,
+              tile.topY,
+              40,
+              40 * this.curShipLen
+            );
+            for (let i = 0; i < this.curShipLen; i++) {
+              this.shipTiles.push(this.mainTiles[firstTileIndex + i]);
+              this.mainTiles[firstTileIndex + i].isHighlighted = true;
+            }
+          } else {
+            this.context.fillRect(
+              tile.topX,
+              tile.topY,
+              40 * this.curShipLen,
+              40
+            );
+
+            //Use 11 because 10x10 grid and every 11 is a new column but same row
+            let indexOffset = 11;
+            for (let i = 0; i < this.curShipLen; i++) {
+              this.shipTiles.push(this.mainTiles[firstTileIndex + indexOffset]);
+              this.mainTiles[firstTileIndex + indexOffset].isHighlighted = true;
+              indexOffset += 11;
+            }
+          }
+
+          this.context.stroke();
         }
       }
-
-      this.context.stroke();
-
       this.didDrop = false;
       this.didSelect = false;
+
+      // if (wasHighlighted) {
+      //   console.log("in was highlighted");
+      //   this.dragulaService.destroy("ship");
+      //   this.dragulaService.createGroup("ship", {
+      //     removeOnSpill: true
+      //   });
+      // }
     }
+  }
+
+  checkTiles(tile: Tile): boolean {
+    let firstTileIndex = this.mainTiles.indexOf(tile);
+    if (this.curShipVertical) {
+      for (let i = 0; i < this.curShipLen; i++) {
+        if (this.mainTiles[firstTileIndex + i].isHighlighted) {
+          console.log("returning false vertical");
+          return false;
+        }
+      }
+    } else {
+      let indexOffset = 11;
+      for (let i = 0; i < this.curShipLen; i++) {
+        if (this.mainTiles[firstTileIndex + indexOffset].isHighlighted) {
+          console.log("returning false horizontal");
+          return false;
+        }
+        indexOffset += 11;
+      }
+    }
+    console.log("returning true");
+    return true;
   }
 
   shipRow: number;
