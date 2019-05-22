@@ -1,4 +1,10 @@
-import { Component, ViewChild, ElementRef, AfterViewInit } from "@angular/core";
+import {
+  Component,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+  OnInit
+} from "@angular/core";
 import { Tile } from "../app/tile";
 import { DragulaService } from "ng2-dragula";
 
@@ -7,7 +13,7 @@ import { DragulaService } from "ng2-dragula";
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"]
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements AfterViewInit, OnInit {
   /** Template reference to the canvas element */
   @ViewChild("canvasEl") canvasEl: ElementRef;
   @ViewChild("enemyEl") enemyEl: ElementRef;
@@ -52,12 +58,15 @@ export class AppComponent implements AfterViewInit {
         return false; // don't prevent any drags from initiating by default
       }
     });
+
     // dragulaService.find("ship").drake.on("drop", (el, target) => {
     //   console.log("target", target);
     //   console.log("element", el);
     // });
     // this.dragulaService.
   }
+
+  ngOnInit(): void {}
 
   mainTiles: Tile[] = [];
   shipTiles: Tile[] = [];
@@ -193,6 +202,10 @@ export class AppComponent implements AfterViewInit {
             indexOffset += 11;
             this.hideShip[this.curShipId] = true;
           }
+        }
+
+        if (this.hideShip.indexOf(false) == -1) {
+          this.ready = true;
         }
 
         this.context.stroke();
