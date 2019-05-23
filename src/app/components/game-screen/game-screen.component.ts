@@ -111,7 +111,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     //   console.log("enemyShipArr");
     //   console.log(this.enemyShipsArr);
     // });
-
+    // this.gameService.resetGame();
     this.gameService.register(this.getUUID());
   }
 
@@ -119,6 +119,11 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.
     this.gameService.resetGame();
+  }
+
+  reset() {
+    this.gameService.resetGame();
+    this.gameService.register(this.gameService.userID);
   }
 
   getUUID(): String {
