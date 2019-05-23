@@ -373,6 +373,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       //Check if it is a hit here and then update UI accordingly
       this.gameService.checkEnemyBoard(this.enemyBoardRow, this.enemyBoardCol);
       let didHit = this.gameService.getHit();
+      console.log(didHit);
       //Getting the tile on the enemy board to set it to higlighted
       //  let enemyTile = this.enemyBoardTiles.find(
       //     selectedTile =>
@@ -398,7 +399,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       //   this.enemyBoardContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
       //   this.enemyBoardContext.stroke();
       // }
-      // this.enemySelected = false;
+      this.enemySelected = false;
     }
   }
 }
