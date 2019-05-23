@@ -1,0 +1,103 @@
+p {
+  font-family: Lato;
+}
+.nums {
+  h1 {
+    font-size: 1.5rem;
+    margin-left: 70px;
+    letter-spacing: 11px;
+  }
+}
+
+.main-container {
+  display: flex;
+  h1 {
+    font-size: 1.5rem;
+    writing-mode: vertical-lr;
+    text-orientation: upright;
+    letter-spacing: -7.5px;
+  }
+
+  // .enemy-container {
+  //   .nums {
+  //     h1 {
+  //       font-size: 1.5rem;
+  //       margin-left: 70px;
+  //       letter-spacing: 11px;
+  //     }
+  //   }
+  // }
+}
+
+.container {
+  display: flex;
+  width: 400px;
+  height: 400px;
+
+  button {
+    width: 89%;
+    height: 40px;
+  }
+}
+
+.enemy-board {
+  h1 {
+    font-size: 1.5rem;
+    writing-mode: vertical-lr;
+    // margin-top: 1000px;
+    font-size: 1.5rem;
+    letter-spacing: 11px;
+  }
+}
+
+.ship {
+  background-color: blue;
+}
+
+.ship-container {
+  // flex-shrink: 50%;
+  // // width: 75%;
+}
+
+canvas {
+  margin-right: 50px;
+  border: 2px solid black;
+  transition: 300ms;
+  border-radius: 4px;
+}
+
+canvas:hover {
+  border: 2px solid rgba(0, 0, 0, 0.54);
+}
+
+/* in-flight clone */
+.gu-mirror {
+  position: fixed !important;
+  margin: 0 !important;
+  z-index: 9999 !important;
+  opacity: 1;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+  //   filter: alpha(opacity=200);
+  pointer-events: none;
+  background-color: blue;
+}
+
+/* high-performance display:none; helper */
+.gu-hide {
+  display: none;
+}
+/* added to mirrorContainer (default = body) while dragging */
+.gu-unselectable {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+}
+/* added to the source element while its mirror is dragged */
+.gu-transit {
+  opacity: 1;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+  background-color: blue;
+  filter: alpha(opacity=20);
+  background-color: transparent;
+}
