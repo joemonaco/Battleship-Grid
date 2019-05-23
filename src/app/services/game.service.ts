@@ -13,21 +13,29 @@ export class GameService {
     // console.log(socket.id);
   }
 
-  userID: String = "";
+  userID;
+
   sendArray(enemyArr: Tile[]) {
     this.socket.emit("enemyShipTiles", enemyArr);
   }
 
   setID() {
     if (this.userID == "") {
-      this.socket.on("connected", id => {
-        this.userID = id;
-        console.log(this.userID);
+      let observable = new Observable(observer => {
+        this.socket.on("connected", id => {
+          this.userID = id;
+          observer.next(id);
+          // console.log(this.userID);
+        });
+        return () => {
+          this.socket.disconnect();
+        };
       });
-      return () => {
-        this.socket.disconnect();
-      };
+
+      this.userID = observable;
     }
+
+    console.log(this.userID);
   }
 
   getEnemyArray(): Observable<any> {

@@ -96,14 +96,14 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
         return false;
       }
     });
+
+    this.gameService.setID();
   }
 
   ngOnInit() {
     this.store.select("battleship").subscribe(state => {
       this.curState = state;
     });
-
-    this.gameService.setID();
     this.gameService.getEnemyArray().subscribe(arr => {
       this.enemyShipsArr = arr;
       console.log("enemyShipArr");
