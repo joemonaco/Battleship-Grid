@@ -372,33 +372,25 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     if (this.enemySelected) {
       //Check if it is a hit here and then update UI accordingly
       this.gameService.checkEnemyBoard(this.enemyBoardRow, this.enemyBoardCol);
-      let didHit = this.gameService.getHit();
-      console.log(didHit);
-      //Getting the tile on the enemy board to set it to higlighted
-      //  let enemyTile = this.enemyBoardTiles.find(
-      //     selectedTile =>
-      //       selectedTile.row == this.enemyBoardRow &&
-      //       selectedTile.col == this.enemyBoardCol
-      //   );
-      //   enemyTile.isHighlighted = true;
 
-      //   // Checking the ships to see if it is a hit
-      //   let shipTile = this.enemyShipsArr.find(
-      //     selectedTile =>
-      //       selectedTile.row == this.enemyBoardRow &&
-      //       selectedTile.col == this.enemyBoardCol
-      //   );
+      this.gameService.getHit().subscribe(data => {
+        // Getting the tile on the enemy board to set it to higlighted
+        let enemyTile = this.enemyBoardTiles.find(
+          selectedTile =>
+            selectedTile.row == data.row && selectedTile.col == data.col
+        );
+        enemyTile.isHighlighted = true;
 
-      //   //shipTile would be null if no ship was found
-      //   if (shipTile != null) {
-      //     this.enemyBoardContext.fillStyle = "red";
-      //   } else {
-      //     this.enemyBoardContext.fillStyle = "lightblue";
-      //   }
+        if (data.hit) {
+          this.enemyBoardContext.fillStyle = "red";
+        } else {
+          this.enemyBoardContext.fillStyle = "lightblue";
+        }
 
-      //   this.enemyBoardContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
-      //   this.enemyBoardContext.stroke();
-      // }
+        this.enemyBoardContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
+        this.enemyBoardContext.stroke();
+      });
+
       this.enemySelected = false;
     }
   }
