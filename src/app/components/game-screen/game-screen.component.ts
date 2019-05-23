@@ -30,6 +30,9 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   //If the user has placed all ships
   allShipsPlaced = false;
 
+  //User clicked ready
+  gameReady = false;
+
   //For Hiding ships after they are placed, false means ship not placed
   // hideShip = [
   //   false,
@@ -269,6 +272,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     this.allShipsPlaced = true;
     console.log(this.playerShipTiles);
     this.drawGrid(false);
+    // this.allShipsPlaced = false;
+    this.gameReady = true;
   }
 
   /** When the user selects a tile on the enemy board */
@@ -293,9 +298,6 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     console.log(this.enemyBoardRow);
     console.log(this.enemyBoardCol);
 
-    //User has selected a spot; To make fire btn enabled
-    this.enemySelected = true;
-
     //Get the new tile clicked by user
     tile = this.enemyBoardTiles.find(
       selectedTile =>
@@ -308,6 +310,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       this.enemyBoardContext.fillStyle = "yellow";
       this.enemyBoardContext.fillRect(tile.topX, tile.topY, 40, 40);
       this.enemyBoardContext.stroke();
+      //User has selected a spot; To make fire btn enabled
+      this.enemySelected = true;
     }
   }
 
@@ -339,5 +343,6 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       this.enemyBoardContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
       this.enemyBoardContext.stroke();
     }
+    this.enemySelected = false;
   }
 }

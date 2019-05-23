@@ -52,11 +52,13 @@ p {
 
 .ship {
   background-color: blue;
+  align-content: center;
+  // margin-right: -px;
 }
 
 .ship-container {
-  // flex-shrink: 50%;
-  // // width: 75%;
+  display: inline-grid;
+  grid-template-columns: auto auto auto;
 }
 
 canvas {

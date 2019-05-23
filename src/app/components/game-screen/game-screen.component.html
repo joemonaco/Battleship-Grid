@@ -8,7 +8,11 @@
         height="400"
         (mouseup)="mouseDrop($event)"
       ></canvas>
-      <button [disabled]="!allShipsPlaced" (click)="readyUp()" id="rdyBtn">
+      <button
+        [disabled]="!allShipsPlaced || gameReady"
+        (click)="readyUp()"
+        id="rdyBtn"
+      >
         READY
       </button>
     </div>
@@ -133,7 +137,7 @@
         ></canvas>
       </div>
     </div>
-    <div class="enemy-container">
+    <div class="enemy-container" [hidden]="!gameReady">
       <div class="enemy-board">
         <div dragula="ship">
           <canvas
@@ -143,7 +147,9 @@
             height="400"
             (mouseup)="enemyBoardClicked($event)"
           ></canvas>
-          <button (click)="fire()" id="fireBtn">FIRE</button>
+          <button [disabled]="!enemySelected" (click)="fire()" id="fireBtn">
+            FIRE
+          </button>
         </div>
       </div>
     </div>
