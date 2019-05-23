@@ -9,19 +9,48 @@ import { Tile } from "../models/tile";
   providedIn: "root"
 })
 export class GameService {
-  constructor(private socket: Socket) {}
+  constructor(private socket: Socket) {
+    // console.log(socket.id);
+  }
 
+  userID: String;
   sendArray(enemyArr: Tile[]) {
     this.socket.emit("enemyShipTiles", enemyArr);
+  }
+
+  setID() {
+    // let observable = new Observable(observer => {
+    this.socket.on("connected", id => {
+      this.userID = id;
+      console.log(this.userID);
+    });
+    return () => {
+      this.socket.disconnect();
+    };
+
+    // });
   }
 
   getEnemyArray(): Observable<any> {
     // console.log(this.socket.fromEvent<any>("message").pipe(map(data => data.msg)))
     // return this.socket.fromEvent<any>("message").pipe(map(data => data.msg));
 
+    // let observable = new Observable(observer => {
+    //   this.socket.on("enemyShipTiles", data => {
+    //     observer.next(data);
+    //   });
+    //   return () => {
+    //     this.socket.disconnect();
+    //   };
+    // });
+
     let observable = new Observable(observer => {
-      this.socket.on("enemyShipTiles", data => {
-        observer.next(data);
+      this.socket.on("enemyShipTiles", (data: any) => {
+        /** check if userID does NOT match then do the data for array */
+
+        if (this.userID != data.id) {
+          observer.next(data.enemyArr);
+        }
       });
       return () => {
         this.socket.disconnect();

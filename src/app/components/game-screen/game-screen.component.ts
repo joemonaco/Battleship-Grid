@@ -103,6 +103,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       this.curState = state;
     });
 
+    this.gameService.setID();
     this.gameService.getEnemyArray().subscribe(arr => {
       this.enemyShipsArr = arr;
       console.log("enemyShipArr");
