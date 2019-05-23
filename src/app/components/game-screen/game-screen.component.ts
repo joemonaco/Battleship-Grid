@@ -34,7 +34,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   playerBoardTiles: Tile[] = [];
   playerShipTiles: Tile[] = [];
   enemyBoardTiles: Tile[] = [];
-  enemyShipsArr: Tile[] = [];
+  // enemyShipsArr: Tile[] = [];
 
   //If the user has placed all ships
   allShipsPlaced = false;
@@ -97,19 +97,35 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       }
     });
 
-    this.gameService.setID();
-    console.log(this.gameService.userID);
+    // this.gameService.setID();
+    // console.log(this.gameService.userID);
   }
 
   ngOnInit() {
     this.store.select("battleship").subscribe(state => {
       this.curState = state;
     });
-    this.gameService.getEnemyArray().subscribe(arr => {
-      this.enemyShipsArr = arr;
-      console.log("enemyShipArr");
-      console.log(this.enemyShipsArr);
-    });
+    // this.gameService.getEnemyArray().subscribe(arr => {
+    //   this.enemyShipsArr = arr;
+    //   console.log("enemyShipArr");
+    //   console.log(this.enemyShipsArr);
+    // });
+
+    this.gameService.register(this.getUUID());
+  }
+
+  getUUID(): String {
+    console.log("in getUUID");
+    length = 32;
+    var result = "";
+    var characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    // console.log(result);
+    return result;
   }
 
   ngAfterViewInit() {
@@ -166,6 +182,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     tile.topY = y;
     tile.botX = x + 40;
     tile.botY = y + 40;
+    tile.isHit = false;
+    tile.isMiss = false;
     tile.isHighlighted = false;
 
     if (isPlayerBoard) {
@@ -179,7 +197,6 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   mouseDrop(e) {
     console.log(this.curShipLen);
     console.log(this.curShipVertical);
-    console.log(this.gameService.userID);
 
     //Makes sure that allShipsPlaced hasnt been clicked and that a ship is selected
     if (this.didSelectShip) {
@@ -307,6 +324,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
     this.store.dispatch(new BattleshipActions.GameReady());
     this.gameService.sendArray(this.playerShipTiles);
+
+    this.gameService.sendBoard(this.playerBoardTiles);
   }
 
   /** When the user selects a tile on the enemy board */
@@ -351,31 +370,35 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   /** When the user clicks the fire button after selecting a tile */
   fire() {
     if (this.enemySelected) {
+      //Check if it is a hit here and then update UI accordingly
+      this.gameService.checkEnemyBoard(this.enemyBoardRow, this.enemyBoardCol);
+      let didHit = this.gameService.getHit();
       //Getting the tile on the enemy board to set it to higlighted
-      let enemyTile = this.enemyBoardTiles.find(
-        selectedTile =>
-          selectedTile.row == this.enemyBoardRow &&
-          selectedTile.col == this.enemyBoardCol
-      );
-      enemyTile.isHighlighted = true;
+      //  let enemyTile = this.enemyBoardTiles.find(
+      //     selectedTile =>
+      //       selectedTile.row == this.enemyBoardRow &&
+      //       selectedTile.col == this.enemyBoardCol
+      //   );
+      //   enemyTile.isHighlighted = true;
 
-      //Checking the ships to see if it is a hit
-      let shipTile = this.enemyShipsArr.find(
-        selectedTile =>
-          selectedTile.row == this.enemyBoardRow &&
-          selectedTile.col == this.enemyBoardCol
-      );
+      //   // Checking the ships to see if it is a hit
+      //   let shipTile = this.enemyShipsArr.find(
+      //     selectedTile =>
+      //       selectedTile.row == this.enemyBoardRow &&
+      //       selectedTile.col == this.enemyBoardCol
+      //   );
 
-      //shipTile would be null if no ship was found
-      if (shipTile != null) {
-        this.enemyBoardContext.fillStyle = "red";
-      } else {
-        this.enemyBoardContext.fillStyle = "lightblue";
-      }
+      //   //shipTile would be null if no ship was found
+      //   if (shipTile != null) {
+      //     this.enemyBoardContext.fillStyle = "red";
+      //   } else {
+      //     this.enemyBoardContext.fillStyle = "lightblue";
+      //   }
 
-      this.enemyBoardContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
-      this.enemyBoardContext.stroke();
+      //   this.enemyBoardContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
+      //   this.enemyBoardContext.stroke();
+      // }
+      // this.enemySelected = false;
     }
-    this.enemySelected = false;
   }
 }

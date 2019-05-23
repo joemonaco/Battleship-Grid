@@ -6,4 +6,6 @@ export class Tile {
   botX: number;
   botY: number;
   isHighlighted: boolean;
+  isHit: boolean;
+  isMiss: boolean;
 }
