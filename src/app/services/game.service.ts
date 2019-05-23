@@ -13,22 +13,21 @@ export class GameService {
     // console.log(socket.id);
   }
 
-  userID: String;
+  userID: String = "";
   sendArray(enemyArr: Tile[]) {
     this.socket.emit("enemyShipTiles", enemyArr);
   }
 
   setID() {
-    // let observable = new Observable(observer => {
-    this.socket.on("connected", id => {
-      this.userID = id;
-      console.log(this.userID);
-    });
-    return () => {
-      this.socket.disconnect();
-    };
-
-    // });
+    if (this.userID == "") {
+      this.socket.on("connected", id => {
+        this.userID = id;
+        console.log(this.userID);
+      });
+      return () => {
+        this.socket.disconnect();
+      };
+    }
   }
 
   getEnemyArray(): Observable<any> {
@@ -49,7 +48,7 @@ export class GameService {
         /** check if userID does NOT match then do the data for array */
 
         if (this.userID != data.id) {
-          observer.next(data.enemyArr);
+          observer.next(data.enemyShips);
         }
       });
       return () => {
