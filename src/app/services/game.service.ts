@@ -13,51 +13,35 @@ export class GameService {
     // console.log(socket.id);
   }
 
-  userID;
+  userID: String = "";
 
   sendArray(enemyArr: Tile[]) {
     this.socket.emit("enemyShipTiles", enemyArr);
   }
 
   setID() {
-    if (this.userID == "") {
-      let observable = new Observable(observer => {
-        this.socket.on("connected", id => {
-          this.userID = id;
-          observer.next(id);
-          // console.log(this.userID);
-        });
-        return () => {
-          this.socket.disconnect();
-        };
+    if (this.userID === "") {
+      this.socket.on("connected", id => {
+        this.userID = id;
+
+        console.log("in connected", this.userID);
       });
-
-      this.userID = observable;
+      // return () => {
+      //   this.socket.disconnect();
+      // };
     }
-
-    console.log(this.userID);
+    if (this.userID) {
+      console.log("in set id", this.userID);
+    }
   }
 
   getEnemyArray(): Observable<any> {
-    // console.log(this.socket.fromEvent<any>("message").pipe(map(data => data.msg)))
-    // return this.socket.fromEvent<any>("message").pipe(map(data => data.msg));
-
-    // let observable = new Observable(observer => {
-    //   this.socket.on("enemyShipTiles", data => {
-    //     observer.next(data);
-    //   });
-    //   return () => {
-    //     this.socket.disconnect();
-    //   };
-    // });
-
     let observable = new Observable(observer => {
       this.socket.on("enemyShipTiles", (data: any) => {
         /** check if userID does NOT match then do the data for array */
-
-        if (this.userID != data.id) {
-          observer.next(data.enemyShips);
-        }
+        // if (this.userID != data.id) {
+        observer.next(data.enemyShips);
+        // }
       });
       return () => {
         this.socket.disconnect();

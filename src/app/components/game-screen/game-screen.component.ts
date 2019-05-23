@@ -98,6 +98,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     });
 
     this.gameService.setID();
+    console.log(this.gameService.userID);
   }
 
   ngOnInit() {
@@ -178,6 +179,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   mouseDrop(e) {
     console.log(this.curShipLen);
     console.log(this.curShipVertical);
+    console.log(this.gameService.userID);
 
     //Makes sure that allShipsPlaced hasnt been clicked and that a ship is selected
     if (this.didSelectShip) {
