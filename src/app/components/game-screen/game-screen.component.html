@@ -9,7 +9,7 @@
         (mouseup)="mouseDrop($event)"
       ></canvas>
       <button
-        [disabled]="!allShipsPlaced || gameReady"
+        [disabled]="!allShipsPlaced || curState == 'READY'"
         (click)="readyUp()"
         id="rdyBtn"
       >
@@ -137,7 +137,7 @@
         ></canvas>
       </div>
     </div>
-    <div class="enemy-container" [hidden]="!gameReady">
+    <div class="enemy-container" [hidden]="curState != 'READY'">
       <div class="enemy-board">
         <div dragula="ship">
           <canvas

@@ -5,8 +5,15 @@ import {
   AfterViewInit,
   OnInit
 } from "@angular/core";
+
 import { Tile } from "../../models/tile";
 import { DragulaService } from "ng2-dragula";
+
+import { Observable } from "rxjs";
+import { Store } from "@ngrx/store";
+import { GameState } from "../../state-management/reducers/battleship.reducer";
+
+import * as BattleshipActions from "../../state-management/actions/battleship.actions";
 
 @Component({
   selector: "app-game-screen",
@@ -30,25 +37,22 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   //If the user has placed all ships
   allShipsPlaced = false;
 
-  //User clicked ready
-  gameReady = false;
-
   //For Hiding ships after they are placed, false means ship not placed
-  hideShip = [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-  ];
+  // hideShip = [
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false
+  // ];
 
   /** FOR TESTING ONLY */
-  // hideShip = [true, true, true, true, true, true, true, true, true, false];
+  hideShip = [true, true, true, true, true, true, true, true, true, false];
 
   //Checking if user picked up a ship
   didSelectShip: boolean = false;
@@ -63,7 +67,13 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   enemyBoardCol: number = -1;
   enemySelected = false;
 
-  constructor(private dragulaService: DragulaService) {
+  //The current state of the game
+  curState: Observable<String>;
+
+  constructor(
+    private dragulaService: DragulaService,
+    private store: Store<GameState>
+  ) {
     //Creating the dragula group to make ships draggable
     dragulaService.createGroup("ship", {
       removeOnSpill: false,
@@ -85,7 +95,11 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit() {
+    this.store.select("battleship").subscribe(state => {
+      this.curState = state;
+    });
+  }
 
   ngAfterViewInit() {
     this.playerBoardContext = (this.playerBoardEl
@@ -278,7 +292,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     console.log(this.playerShipTiles);
     this.drawGrid(false);
     // this.allShipsPlaced = false;
-    this.gameReady = true;
+
+    this.store.dispatch(new BattleshipActions.GameReady());
   }
 
   /** When the user selects a tile on the enemy board */
