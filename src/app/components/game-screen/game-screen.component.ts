@@ -34,21 +34,21 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   gameReady = false;
 
   //For Hiding ships after they are placed, false means ship not placed
-  // hideShip = [
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false
-  // ];
+  hideShip = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ];
 
   /** FOR TESTING ONLY */
-  hideShip = [true, true, true, true, true, true, true, true, true, false];
+  // hideShip = [true, true, true, true, true, true, true, true, true, false];
 
   //Checking if user picked up a ship
   didSelectShip: boolean = false;
@@ -240,9 +240,14 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       return false;
     }
     let firstTileIndex = this.playerBoardTiles.indexOf(tile);
-    /** CHECK ABOUT BOTTOM CLIPPING */
+
     if (this.curShipVertical) {
       for (let i = 0; i < this.curShipLen; i++) {
+        //Checks to make sure that ship isnt going off the board
+        if (this.playerBoardTiles[firstTileIndex + i].row > 9) {
+          return false;
+        }
+
         if (this.playerBoardTiles[firstTileIndex + i].isHighlighted) {
           return false;
         }
