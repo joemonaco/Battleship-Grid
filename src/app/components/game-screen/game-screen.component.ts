@@ -14,6 +14,7 @@ import { Store } from "@ngrx/store";
 import { GameState } from "../../state-management/reducers/battleship.reducer";
 
 import * as BattleshipActions from "../../state-management/actions/battleship.actions";
+import { GameService } from "src/app/services/game.service";
 
 @Component({
   selector: "app-game-screen",
@@ -33,6 +34,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   playerBoardTiles: Tile[] = [];
   playerShipTiles: Tile[] = [];
   enemyBoardTiles: Tile[] = [];
+  enemyShipsArr: Tile[] = [];
 
   //If the user has placed all ships
   allShipsPlaced = false;
@@ -72,7 +74,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
   constructor(
     private dragulaService: DragulaService,
-    private store: Store<GameState>
+    private store: Store<GameState>,
+    private gameService: GameService
   ) {
     //Creating the dragula group to make ships draggable
     dragulaService.createGroup("ship", {
@@ -98,6 +101,12 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   ngOnInit() {
     this.store.select("battleship").subscribe(state => {
       this.curState = state;
+    });
+
+    this.gameService.getEnemyArray().subscribe(arr => {
+      this.enemyShipsArr = arr;
+      console.log("enemyShipArr");
+      console.log(this.enemyShipsArr);
     });
   }
 
@@ -294,6 +303,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     // this.allShipsPlaced = false;
 
     this.store.dispatch(new BattleshipActions.GameReady());
+    this.gameService.sendArray(this.playerShipTiles);
   }
 
   /** When the user selects a tile on the enemy board */
@@ -347,7 +357,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       enemyTile.isHighlighted = true;
 
       //Checking the ships to see if it is a hit
-      let shipTile = this.playerShipTiles.find(
+      let shipTile = this.enemyShipsArr.find(
         selectedTile =>
           selectedTile.row == this.enemyBoardRow &&
           selectedTile.col == this.enemyBoardCol
