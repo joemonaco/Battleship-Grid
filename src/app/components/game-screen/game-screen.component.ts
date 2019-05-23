@@ -3,7 +3,8 @@ import {
   ViewChild,
   ElementRef,
   AfterViewInit,
-  OnInit
+  OnInit,
+  OnDestroy
 } from "@angular/core";
 
 import { Tile } from "../../models/tile";
@@ -112,6 +113,12 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     // });
 
     this.gameService.register(this.getUUID());
+  }
+
+  ngOnDestroy() {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    this.gameService.resetGame();
   }
 
   getUUID(): String {

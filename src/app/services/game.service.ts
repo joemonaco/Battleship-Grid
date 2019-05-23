@@ -19,6 +19,10 @@ export class GameService {
     this.socket.emit("enemyShipTiles", enemyArr);
   }
 
+  resetGame() {
+    this.socket.emit("reset");
+  }
+
   register(userID) {
     this.socket.emit("register", userID);
     this.userID = userID;
