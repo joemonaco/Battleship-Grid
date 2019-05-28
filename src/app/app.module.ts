@@ -13,7 +13,7 @@ import { SocketIoModule, SocketIoConfig } from "ngx-socket-io";
 import { GameService } from "src/app/services/game.service";
 
 const config: SocketIoConfig = {
-  url: "192.168.1.14:8000",
+  url: "192.168.162.190:8000",
   options: {}
 };
 
