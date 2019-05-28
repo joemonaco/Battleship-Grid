@@ -25,7 +25,7 @@ export class GameService {
 
   getState() {
     let observable = new Observable(observer => {
-      this.socket.on("state", (data) => {
+      this.socket.on("state", data => {
         console.log("state", data);
         observer.next(data);
       });
@@ -52,6 +52,7 @@ export class GameService {
         console.log("readyToStart", data);
         observer.next(data);
       });
+      return () => {};
     });
     return observable;
   }

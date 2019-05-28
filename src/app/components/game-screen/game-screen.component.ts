@@ -109,13 +109,10 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
     this.gameService.checkReady().subscribe(isReady => {
       console.log(isReady);
-      if(isReady) {
+      if (isReady) {
         this.store.dispatch(new BattleshipActions.GameReady());
       }
-    })
-
-
-
+    });
 
     // this.gameService.getEnemyArray().subscribe(arr => {
     //   this.enemyShipsArr = arr;
@@ -124,8 +121,6 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     // });
     // this.gameService.resetGame();
     this.gameService.register(this.getUUID());
-
-
   }
 
   ngOnDestroy() {
