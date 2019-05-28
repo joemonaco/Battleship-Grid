@@ -107,6 +107,13 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       this.curState = state;
     });
 
+    this.gameService.checkReady().subscribe(isReady => {
+      console.log(isReady);
+      if(isReady) {
+        this.store.dispatch(new BattleshipActions.GameReady());
+      }
+    })
+
 
 
 
@@ -340,14 +347,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     this.drawGrid(false);
     // this.allShipsPlaced = false;
 
-    
     // this.gameService.sendArray(this.playerShipTiles);
-    this.gameService.checkReady().subscribe(isReady => {
-      console.log(isReady);
-      if(isReady) {
-        this.store.dispatch(new BattleshipActions.GameReady());
-      }
-    })
     this.gameService.sendBoard(this.playerBoardTiles);
   }
 
