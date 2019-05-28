@@ -124,8 +124,6 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       this.player = data;
     });
 
-    console.log(this.player);
-
     this.gameService.getTurn().subscribe(turn => {
       console.log(turn);
       if (turn == "P1_TURN") {
@@ -142,6 +140,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     // });
     // this.gameService.resetGame();
     this.gameService.register(this.getUUID());
+    console.log(this.player);
   }
 
   ngOnDestroy() {
@@ -238,6 +237,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   mouseDrop(e) {
     console.log(this.curShipLen);
     console.log(this.curShipVertical);
+    console.log("player number is", this.player);
 
     //Makes sure that allShipsPlaced hasnt been clicked and that a ship is selected
     if (this.didSelectShip) {
