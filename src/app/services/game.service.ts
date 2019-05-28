@@ -64,9 +64,9 @@ export class GameService {
     return observable;
   }
 
-  updateOtherBoard(topX, topY) {
-    this.socket.emit("updateBoard", { topX: topX, topY: topY });
-  }
+  // updateOtherBoard(topX, topY) {
+  //   this.socket.emit("updateBoard", { topX: topX, topY: topY });
+  // }
 
   updatePlayerBoard(): Observable<any> {
     // console.log("check ready");

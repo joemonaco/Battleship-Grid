@@ -175,9 +175,11 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       enemyTile.isHighlighted = true;
 
       if (data.hit) {
+        console.log("hit true for player", data.uuid);
         this.enemyBoardContext.fillStyle = "red";
         this.playerBoardContext.fillStyle = "red";
       } else {
+        console.log("hit false for player", data.uuid);
         this.enemyBoardContext.fillStyle = "lightblue";
         this.playerBoardContext.fillStyle = "lightblue";
       }
@@ -185,13 +187,14 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       this.enemyBoardContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
       this.enemyBoardContext.stroke();
 
-      if (this.gameService.userID != data.uuid) {
-        this.gameService.updateOtherBoard(enemyTile.topX, enemyTile.topY);
-      }
+      // if (this.gameService.userID != data.uuid) {
+      //   this.gameService.updateOtherBoard(enemyTile.topX, enemyTile.topY);
+      // }
     });
 
     this.gameService.updatePlayerBoard().subscribe(data => {
       if (data.uuid == this.gameService.userID) {
+        console.log("update board");
         // Getting the tile on the enemy board to set it to higlighted
         let tile = this.playerBoardTiles.find(
           selectedTile =>
