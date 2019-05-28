@@ -148,7 +148,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     });
 
     this.gameService.getTurn().subscribe(turn => {
-      console.log(turn);
+      // console.log(turn);
       if (turn == "P1_TURN") {
         this.store.dispatch(new BattleshipActions.Player1Turn());
         if (this.player == 1) {
@@ -167,7 +167,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     });
 
     this.gameService.getHit().subscribe(data => {
-      if (data.uuid != this.gameService.userID) {
+      if (data.uuid == this.gameService.userID) {
         // Getting the tile on the enemy board to set it to higlighted
         let enemyTile = this.enemyBoardTiles.find(
           selectedTile =>
@@ -222,7 +222,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     });
 
     this.gameService.register(this.getUUID());
-    console.log(this.player);
+    // console.log(this.player);
   }
 
   ngOnDestroy() {
@@ -237,7 +237,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   }
 
   getUUID(): String {
-    console.log("in getUUID");
+    // console.log("in getUUID");
     length = 32;
     var result = "";
     var characters =
@@ -259,7 +259,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
     this.drawGrid(true);
 
-    console.log(this.playerBoardTiles);
+    // console.log(this.playerBoardTiles);
   }
 
   /** Draws tiles on the grid for the player */
@@ -317,9 +317,9 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
   //When user lets go of the ship ontop of the grid
   mouseDrop(e) {
-    console.log(this.curShipLen);
-    console.log(this.curShipVertical);
-    console.log("player number is", this.player);
+    // console.log(this.curShipLen);
+    // console.log(this.curShipVertical);
+    // console.log("player number is", this.player);
 
     //Makes sure that allShipsPlaced hasnt been clicked and that a ship is selected
     if (this.didSelectShip) {
@@ -335,7 +335,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
       //Checks if ship is overlapping with others
       if (!this.isOverlapping(tile)) {
-        console.log("isOverlapping false");
+        // console.log("isOverlapping false");
         this.dragulaService.find("ship").drake.cancel(true);
       } else {
         //Get index for playerBoardTiles array to be able to add to playerShipTiles later
@@ -441,7 +441,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   /** When user clicks ready */
   readyUp() {
     this.allShipsPlaced = true;
-    console.log(this.playerShipTiles);
+    // console.log(this.playerShipTiles);
     this.drawGrid(false);
     // this.allShipsPlaced = false;
 
@@ -453,8 +453,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
   /** When the user selects a tile on the enemy board */
   enemyBoardClicked(e) {
-    console.log("you are player", this.player);
-    console.log("thisTurn is: ", this.isTurn);
+    // console.log("you are player", this.player);
+    // console.log("thisTurn is: ", this.isTurn);
 
     //Checks the previous tile selected if users picks new tile
     let tile = this.enemyBoardTiles.find(
@@ -473,8 +473,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     this.enemyBoardRow = Math.trunc(e.offsetY / 40);
     this.enemyBoardCol = Math.trunc(e.offsetX / 40);
 
-    console.log(this.enemyBoardRow);
-    console.log(this.enemyBoardCol);
+    // console.log(this.enemyBoardRow);
+    // console.log(this.enemyBoardCol);
 
     //Get the new tile clicked by user
     tile = this.enemyBoardTiles.find(
