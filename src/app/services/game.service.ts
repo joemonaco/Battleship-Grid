@@ -64,6 +64,22 @@ export class GameService {
     return observable;
   }
 
+  updateOtherBoard(topX, topY) {
+    this.socket.emit("updateBoard", { topX: topX, topY: topY });
+  }
+
+  updatePlayerBoard(): Observable<any> {
+    // console.log("check ready");
+    let observable = new Observable(observer => {
+      this.socket.on("updatePlayerBoard", data => {
+        console.log("updatePlayerBoard", data);
+        observer.next(data);
+      });
+      return () => {};
+    });
+    return observable;
+  }
+
   getWinningID() {
     let observable = new Observable(observer => {
       this.socket.on("winningID", playerID => {

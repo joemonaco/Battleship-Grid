@@ -166,7 +166,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       }
     });
 
-    let didHitSub = this.gameService.getHit().subscribe(data => {
+    this.gameService.getHit().subscribe(data => {
       // Getting the tile on the enemy board to set it to higlighted
       let enemyTile = this.enemyBoardTiles.find(
         selectedTile =>
@@ -177,12 +177,6 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       if (data.hit) {
         this.enemyBoardContext.fillStyle = "red";
         this.playerBoardContext.fillStyle = "red";
-
-        // if (this.winner) {
-        //   console.log("enemys all gone");
-        //   // this.gameService.isWinner();
-        //   this.store.dispatch(new BattleshipActions.GameOver());
-        // }
       } else {
         this.enemyBoardContext.fillStyle = "lightblue";
         this.playerBoardContext.fillStyle = "lightblue";
@@ -191,23 +185,37 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       this.enemyBoardContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
       this.enemyBoardContext.stroke();
 
-      if (this.gameService.userID == data.uuid) {
-        this.playerBoardContext.fillRect(
-          enemyTile.topX,
-          enemyTile.topY,
-          40,
-          40
-        );
-        this.playerBoardContext.stroke();
+      if (this.gameService.userID != data.uuid) {
+        this.gameService.updateOtherBoard(enemyTile.topX, enemyTile.topY);
       }
     });
 
-    // this.gameService.getEnemyArray().subscribe(arr => {
-    //   this.enemyShipsArr = arr;
-    //   console.log("enemyShipArr");
-    //   console.log(this.enemyShipsArr);
-    // });
-    // this.gameService.resetGame();
+    this.gameService.updatePlayerBoard().subscribe(data => {
+      if (data.uuid == this.gameService.userID) {
+        // Getting the tile on the enemy board to set it to higlighted
+        let tile = this.playerBoardTiles.find(
+          selectedTile =>
+            selectedTile.row == data.row && selectedTile.col == data.col
+        );
+        tile.isHighlighted = true;
+
+        if (data.hit) {
+          // this.enemyBoardContext.fillStyle = "red";
+          this.playerBoardContext.fillStyle = "red";
+        } else {
+          // this.enemyBoardContext.fillStyle = "lightblue";
+          this.playerBoardContext.fillStyle = "lightblue";
+        }
+
+        this.playerBoardContext.fillRect(data.topX, data.topY, 40, 40);
+        this.playerBoardContext.stroke();
+      }
+
+      // if (this.gameService.userID != data.uuid) {
+      //   this.gameService.updateOtherBoard(enemyTile.topX, enemyTile.topY);
+      // }
+    });
+
     this.gameService.register(this.getUUID());
     console.log(this.player);
   }
