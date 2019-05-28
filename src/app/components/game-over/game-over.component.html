@@ -1,3 +1,8 @@
-<p>
-  game-over works!
-</p>
+<div class="game-over">
+  <ng-container *ngIf="didWin; else lost">
+    <h1>YOU WIN!</h1>
+  </ng-container>
+  <ng-template #lost>
+    <h1>YOU SUCK YOU LOSE!</h1>
+  </ng-template>
+</div>
