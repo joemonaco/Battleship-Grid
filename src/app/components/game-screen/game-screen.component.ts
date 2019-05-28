@@ -107,6 +107,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       this.curState = state;
     });
 
+    // console.log
     this.gameService.checkReady().subscribe(isReady => {
       console.log(isReady);
       if (isReady) {
