@@ -15,7 +15,7 @@ export class GameService {
 
   userID: String = "";
 
-  didWin = false;
+  winningID: String;
 
   // sendArray(enemyArr: Tile[]) {
   //   this.socket.emit("enemyShipTiles", enemyArr);
@@ -53,9 +53,21 @@ export class GameService {
     let observable = new Observable(observer => {
       this.socket.on("winner", playerID => {
         console.log("winner", playerID);
-        if (this.userID == playerID) {
-          this.didWin = true;
-        }
+        // if (this.userID == playerID) {
+        //   this.didWin = true;
+        // }
+        this.winningID = playerID;
+        observer.next(playerID);
+      });
+      return () => {};
+    });
+    return observable;
+  }
+
+  getWinningID() {
+    let observable = new Observable(observer => {
+      this.socket.on("winningID", playerID => {
+        console.log("winningID", playerID);
         observer.next(playerID);
       });
       return () => {};

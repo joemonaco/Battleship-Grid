@@ -17,9 +17,21 @@ export class GameOverComponent implements OnInit {
   ) {}
 
   didWin = false;
+
+  userID: String;
   ngOnInit() {
-    if (this.gameService.didWin) {
-      this.didWin = true;
-    }
+    console.log("this user id is", this.gameService.userID);
+    this.userID = this.gameService.userID;
+
+    this.gameService.getWinningID().subscribe(data => {
+      if (this.userID == data) {
+        this.didWin = true;
+      }
+    });
+
+    // if (this.gameService.userID == this.gameService.winningID) {
+    //   console.log("true");
+    //   this.didWin = true;
+    // }
   }
 }
