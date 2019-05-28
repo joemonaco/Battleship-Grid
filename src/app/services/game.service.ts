@@ -15,9 +15,9 @@ export class GameService {
 
   userID: String = "";
 
-  sendArray(enemyArr: Tile[]) {
-    this.socket.emit("enemyShipTiles", enemyArr);
-  }
+  // sendArray(enemyArr: Tile[]) {
+  //   this.socket.emit("enemyShipTiles", enemyArr);
+  // }
 
   resetGame() {
     this.socket.emit("reset");
@@ -36,6 +36,16 @@ export class GameService {
     this.socket.emit("board", { uuid: this.userID, board: board });
   }
 
+  checkReady(): Observable<any> {
+    let observable = new Observable(observer => {
+      this.socket.on("readyToStart", (data) => {
+        console.log("readyToStart", data);
+        observer.next(data);
+      });
+    });
+    return observable;
+  }
+
   getHit(): Observable<any> {
     let observable = new Observable(observer => {
       this.socket.on("hit", (data: any) => {
@@ -52,6 +62,7 @@ export class GameService {
     });
     return observable;
   }
+
 
   // return () => {
   //   this.socket.disconnect();

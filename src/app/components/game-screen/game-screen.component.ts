@@ -335,8 +335,10 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     // this.allShipsPlaced = false;
 
     this.store.dispatch(new BattleshipActions.GameReady());
-    this.gameService.sendArray(this.playerShipTiles);
-
+    // this.gameService.sendArray(this.playerShipTiles);
+    this.gameService.checkReady().subscribe(isReady => {
+      console.log(isReady);
+    })
     this.gameService.sendBoard(this.playerBoardTiles);
   }
 
