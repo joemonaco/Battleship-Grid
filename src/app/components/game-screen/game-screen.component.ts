@@ -123,13 +123,14 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       if (isReady) {
         this.store.dispatch(new BattleshipActions.GameReady());
         this.gameStarted = true;
-        // if ((this.player = 1)) {
-        //   this.isTurn = true;
-        // }
+        if ((this.player = 1)) {
+          this.isTurn = true;
+        }
       }
     });
 
     this.gameService.getPlayer().subscribe(data => {
+      console.log("getting data to be player: ", data);
       this.player = data;
     });
 
@@ -390,6 +391,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
   /** When the user selects a tile on the enemy board */
   enemyBoardClicked(e) {
+    console.log("you are player", this.player);
     console.log("thisTurn is: ", this.isTurn);
 
     //Checks the previous tile selected if users picks new tile
