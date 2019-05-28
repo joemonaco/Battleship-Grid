@@ -30,6 +30,13 @@ export class Player2Turn implements Action {
   constructor() {}
 }
 
-export type Actions = GameReady | Player1Turn | Player2Turn;
+export class GameOver implements Action {
+  readonly type = GAME_OVER;
+
+  //payload here will be a tile coord
+  constructor() {}
+}
+
+export type Actions = GameReady | Player1Turn | Player2Turn | GameOver;
 
 // export type Actions = AddTutorial | RemoveTutorial;

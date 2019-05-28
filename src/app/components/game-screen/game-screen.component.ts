@@ -45,6 +45,9 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   //If it is the current players turn
   isTurn = false;
 
+  //Checks how many tiles are highlighted. 10 Ships with 30 tiles altogher
+  enemyTilesHit = 0;
+
   //For Hiding ships after they are placed, false means ship not placed
   // hideShip = [
   //   false,
@@ -447,6 +450,11 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
         if (data.hit) {
           this.enemyBoardContext.fillStyle = "red";
+          this.enemyTilesHit++;
+          if (this.enemyTilesHit == 5) {
+            this.gameService.isWinner(this.player);
+            this.store.dispatch(new BattleshipActions.GameOver());
+          }
         } else {
           this.enemyBoardContext.fillStyle = "lightblue";
         }

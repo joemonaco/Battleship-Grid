@@ -24,6 +24,9 @@ export function reducer(
     case BattleshipActions.P2_TURN: {
       return BattleshipActions.P2_TURN;
     }
+    case BattleshipActions.GAME_OVER: {
+      return BattleshipActions.GAME_OVER;
+    }
     default: {
       return state;
     }
