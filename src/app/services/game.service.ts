@@ -47,7 +47,11 @@ export class GameService {
   }
 
   checkReady(): Observable<any> {
+<<<<<<< HEAD
     console.log("check ready");
+=======
+    console.log('check ready');
+>>>>>>> 0c0f6938a2740fb344ff348ccd0c29cc26b346a3
     let observable = new Observable(observer => {
       this.socket.on("readyToStart", data => {
         console.log("readyToStart", data);
