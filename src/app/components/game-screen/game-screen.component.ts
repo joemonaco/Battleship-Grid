@@ -166,6 +166,42 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       }
     });
 
+    let didHitSub = this.gameService.getHit().subscribe(data => {
+      // Getting the tile on the enemy board to set it to higlighted
+      let enemyTile = this.enemyBoardTiles.find(
+        selectedTile =>
+          selectedTile.row == data.row && selectedTile.col == data.col
+      );
+      enemyTile.isHighlighted = true;
+
+      if (data.hit) {
+        this.enemyBoardContext.fillStyle = "red";
+        this.playerBoardContext.fillStyle = "red";
+
+        // if (this.winner) {
+        //   console.log("enemys all gone");
+        //   // this.gameService.isWinner();
+        //   this.store.dispatch(new BattleshipActions.GameOver());
+        // }
+      } else {
+        this.enemyBoardContext.fillStyle = "lightblue";
+        this.playerBoardContext.fillStyle = "lightblue";
+      }
+
+      this.enemyBoardContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
+      this.enemyBoardContext.stroke();
+
+      if (this.gameService.userID == data.uuid) {
+        this.playerBoardContext.fillRect(
+          enemyTile.topX,
+          enemyTile.topY,
+          40,
+          40
+        );
+        this.playerBoardContext.stroke();
+      }
+    });
+
     // this.gameService.getEnemyArray().subscribe(arr => {
     //   this.enemyShipsArr = arr;
     //   console.log("enemyShipArr");
@@ -449,41 +485,6 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     if (this.enemySelected) {
       //Check if it is a hit here and then update UI accordingly
       this.gameService.checkEnemyBoard(this.enemyBoardRow, this.enemyBoardCol);
-
-      let didHitSub = this.gameService.getHit().subscribe(data => {
-        // Getting the tile on the enemy board to set it to higlighted
-        let enemyTile = this.enemyBoardTiles.find(
-          selectedTile =>
-            selectedTile.row == data.row && selectedTile.col == data.col
-        );
-        enemyTile.isHighlighted = true;
-
-        if (data.hit) {
-          this.enemyBoardContext.fillStyle = "red";
-          this.playerBoardContext.fillStyle = "red";
-
-          // if (this.winner) {
-          //   console.log("enemys all gone");
-          //   // this.gameService.isWinner();
-          //   this.store.dispatch(new BattleshipActions.GameOver());
-          // }
-        } else {
-          this.enemyBoardContext.fillStyle = "lightblue";
-          this.playerBoardContext.fillStyle = "lightblue";
-        }
-
-        this.enemyBoardContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
-        this.enemyBoardContext.stroke();
-        if (this.gameService.userID == data.uuid) {
-          this.playerBoardContext.fillRect(
-            enemyTile.topX,
-            enemyTile.topY,
-            40,
-            40
-          );
-          this.playerBoardContext.stroke();
-        }
-      });
 
       this.enemySelected = false;
     }
