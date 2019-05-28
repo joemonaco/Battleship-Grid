@@ -106,6 +106,10 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     this.store.select("battleship").subscribe(state => {
       this.curState = state;
     });
+
+
+
+
     // this.gameService.getEnemyArray().subscribe(arr => {
     //   this.enemyShipsArr = arr;
     //   console.log("enemyShipArr");
@@ -113,6 +117,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     // });
     // this.gameService.resetGame();
     this.gameService.register(this.getUUID());
+
+
   }
 
   ngOnDestroy() {
@@ -334,10 +340,13 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     this.drawGrid(false);
     // this.allShipsPlaced = false;
 
-    this.store.dispatch(new BattleshipActions.GameReady());
+    
     // this.gameService.sendArray(this.playerShipTiles);
     this.gameService.checkReady().subscribe(isReady => {
       console.log(isReady);
+      if(isReady) {
+        this.store.dispatch(new BattleshipActions.GameReady());
+      }
     })
     this.gameService.sendBoard(this.playerBoardTiles);
   }
