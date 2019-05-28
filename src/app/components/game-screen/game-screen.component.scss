@@ -16,12 +16,12 @@ p {
 
 .main-container {
   display: flex;
-  h1 {
-    font-size: 1.5rem;
-    writing-mode: vertical-lr;
-    text-orientation: upright;
-    letter-spacing: -7.5px;
-  }
+  // h1 {
+  //   font-size: 1.5rem;
+  //   writing-mode: vertical-lr;
+  //   text-orientation: upright;
+  //   letter-spacing: -7.5px;
+  // }
 
   // .enemy-container {
   //   .nums {
@@ -46,13 +46,14 @@ p {
 }
 
 .enemy-board {
-  h1 {
-    font-size: 1.5rem;
-    writing-mode: vertical-lr;
-    // margin-top: 1000px;
-    font-size: 1.5rem;
-    letter-spacing: 11px;
-  }
+  // h1 {
+  //   font-size: 1.5rem;
+  //   writing-mode: vertical-lr;
+  //   // margin-top: 1000px;
+  //   font-size: 1.5rem;
+  //   letter-spacing: 11px;
+  // }
+  margin-top: -80px;
 }
 
 .ship {

@@ -123,7 +123,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       if (isReady) {
         this.store.dispatch(new BattleshipActions.GameReady());
         this.gameStarted = true;
-        if ((this.player = 1)) {
+        if (this.player == 1) {
           this.isTurn = true;
         }
       }

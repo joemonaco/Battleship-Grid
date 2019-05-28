@@ -139,6 +139,13 @@
     </div>
     <div class="enemy-container" [hidden]="!gameStarted">
       <div class="enemy-board">
+        <ng-container *ngIf="isTurn; else notTurn">
+          <h1>Your Turn!</h1>
+        </ng-container>
+        <ng-template #notTurn>
+          <h1>Please Wait for other Player</h1>
+        </ng-template>
+
         <div dragula="ship">
           <canvas
             id="enemyBoard"
