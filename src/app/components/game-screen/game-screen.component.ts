@@ -42,6 +42,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
   player: any;
 
+  winner = false;
+
   //If it is the current players turn
   isTurn = false;
 
@@ -130,6 +132,14 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
           this.isTurn = true;
         }
       }
+    });
+
+    this.gameService.isWinner().subscribe(player => {
+      console.log(player, " is winner");
+      this.winner = true;
+      // if (player == this.player) {
+      this.store.dispatch(new BattleshipActions.GameOver());
+      // }
     });
 
     this.gameService.getPlayer().subscribe(data => {
@@ -450,11 +460,11 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
         if (data.hit) {
           this.enemyBoardContext.fillStyle = "red";
-          this.enemyTilesHit++;
-          if (this.enemyTilesHit == 5) {
-            this.gameService.isWinner(this.player);
-            this.store.dispatch(new BattleshipActions.GameOver());
-          }
+          // if (this.winner) {
+          //   console.log("enemys all gone");
+          //   // this.gameService.isWinner();
+          //   this.store.dispatch(new BattleshipActions.GameOver());
+          // }
         } else {
           this.enemyBoardContext.fillStyle = "lightblue";
         }

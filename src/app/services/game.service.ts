@@ -57,8 +57,15 @@ export class GameService {
     return observable;
   }
 
-  isWinner(player) {
-    this.socket.emit("winner", player);
+  isWinner() {
+    let observable = new Observable(observer => {
+      this.socket.on("winner", player => {
+        console.log("winner", player);
+        observer.next(player);
+      });
+      return () => {};
+    });
+    return observable;
   }
 
   checkReady(): Observable<any> {
