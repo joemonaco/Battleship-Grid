@@ -71,8 +71,8 @@ export class GameService {
   updatePlayerBoard(): Observable<any> {
     // console.log("check ready");
     let observable = new Observable(observer => {
-      this.socket.on("updatePlayerBoard", data => {
-        console.log("updatePlayerBoard", data);
+      this.socket.on("playerBoardUpdate", data => {
+        console.log("playerBoardUpdate", data);
         observer.next(data);
       });
       return () => {};
