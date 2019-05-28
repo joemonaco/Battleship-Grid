@@ -167,29 +167,31 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     });
 
     this.gameService.getHit().subscribe(data => {
-      // Getting the tile on the enemy board to set it to higlighted
-      let enemyTile = this.enemyBoardTiles.find(
-        selectedTile =>
-          selectedTile.row == data.row && selectedTile.col == data.col
-      );
-      enemyTile.isHighlighted = true;
+      if (data.uuid != this.gameService.userID) {
+        // Getting the tile on the enemy board to set it to higlighted
+        let enemyTile = this.enemyBoardTiles.find(
+          selectedTile =>
+            selectedTile.row == data.row && selectedTile.col == data.col
+        );
+        enemyTile.isHighlighted = true;
 
-      if (data.hit) {
-        console.log("hit true for player", data.uuid);
-        this.enemyBoardContext.fillStyle = "red";
-        this.playerBoardContext.fillStyle = "red";
-      } else {
-        console.log("hit false for player", data.uuid);
-        this.enemyBoardContext.fillStyle = "lightblue";
-        this.playerBoardContext.fillStyle = "lightblue";
+        if (data.hit) {
+          console.log("hit true for player", data.uuid);
+          this.enemyBoardContext.fillStyle = "red";
+          this.playerBoardContext.fillStyle = "red";
+        } else {
+          console.log("hit false for player", data.uuid);
+          this.enemyBoardContext.fillStyle = "lightblue";
+          this.playerBoardContext.fillStyle = "lightblue";
+        }
+
+        this.enemyBoardContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
+        this.enemyBoardContext.stroke();
+
+        // if (this.gameService.userID != data.uuid) {
+        //   this.gameService.updateOtherBoard(enemyTile.topX, enemyTile.topY);
+        // }
       }
-
-      this.enemyBoardContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
-      this.enemyBoardContext.stroke();
-
-      // if (this.gameService.userID != data.uuid) {
-      //   this.gameService.updateOtherBoard(enemyTile.topX, enemyTile.topY);
-      // }
     });
 
     this.gameService.updatePlayerBoard().subscribe(data => {
