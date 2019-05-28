@@ -23,15 +23,15 @@ export class GameService {
     this.socket.emit("reset");
   }
 
-  getState() {
-    let observable = new Observable(observer => {
-      this.socket.on("state", data => {
-        console.log("state", data);
-        observer.next(data);
-      });
-    });
-    return observable;
-  }
+  // getState() {
+  //   let observable = new Observable(observer => {
+  //     this.socket.on("state", data => {
+  //       console.log("state", data);
+  //       observer.next(data);
+  //     });
+  //   });
+  //   return observable;
+  // }
 
   register(userID) {
     this.socket.emit("register", userID);
@@ -46,15 +46,34 @@ export class GameService {
     this.socket.emit("board", { uuid: this.userID, board: board });
   }
 
+  getPlayer(): Observable<any> {
+    let observable = new Observable(observer => {
+      this.socket.on("player", data => {
+        console.log("player", data);
+        observer.next(data);
+      });
+      return () => {};
+    });
+    return observable;
+  }
+
   checkReady(): Observable<any> {
-<<<<<<< HEAD
     console.log("check ready");
-=======
-    console.log('check ready');
->>>>>>> 0c0f6938a2740fb344ff348ccd0c29cc26b346a3
     let observable = new Observable(observer => {
       this.socket.on("readyToStart", data => {
         console.log("readyToStart", data);
+        observer.next(data);
+      });
+      return () => {};
+    });
+    return observable;
+  }
+
+  getTurn(): Observable<any> {
+    console.log("check turn");
+    let observable = new Observable(observer => {
+      this.socket.on("turn", data => {
+        console.log("turn", data);
         observer.next(data);
       });
       return () => {};
@@ -79,29 +98,6 @@ export class GameService {
     return observable;
   }
 
-  // return () => {
-  //   this.socket.disconnect();
-  // // };
-  // });
-
-  // }
-  // }
-
-  // getEnemyArray(): Observable<any> {
-  //   let observable = new Observable(observer => {
-  //     this.socket.on("enemyShipTiles", (data: any) => {
-  //       /** check if userID does NOT match then do the data for array */
-  //       // if (this.userID != data.id) {
-  //       observer.next(data.enemyShips);
-  //       // }
-  //     });
-  //     return () => {
-  //       this.socket.disconnect();
-  //     };
-  //   });
-
-  //   return observable;
-  // }
   close() {
     this.socket.disconnect();
   }

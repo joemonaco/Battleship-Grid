@@ -40,6 +40,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   //If the user has placed all ships
   allShipsPlaced = false;
 
+  player: any;
+
   //For Hiding ships after they are placed, false means ship not placed
   // hideShip = [
   //   false,
@@ -73,9 +75,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   //The current state of the game
   curState: Observable<String>;
 
+  isReadySub: any;
   readyClicked = false;
-
-
 
   constructor(
     private dragulaService: DragulaService,
@@ -116,6 +117,21 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       console.log(isReady);
       if (isReady) {
         this.store.dispatch(new BattleshipActions.GameReady());
+      }
+    });
+
+    this.gameService.getPlayer().subscribe(data => {
+      this.player = data;
+    });
+
+    console.log(this.player);
+
+    this.gameService.getTurn().subscribe(turn => {
+      console.log(turn);
+      if (turn == "P1_TURN") {
+        this.store.dispatch(new BattleshipActions.Player1Turn());
+      } else if (turn == "P2_TURN") {
+        this.store.dispatch(new BattleshipActions.Player2Turn());
       }
     });
 
@@ -398,7 +414,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       //Check if it is a hit here and then update UI accordingly
       this.gameService.checkEnemyBoard(this.enemyBoardRow, this.enemyBoardCol);
 
-      this.gameService.getHit().subscribe(data => {
+      let didHitSub = this.gameService.getHit().subscribe(data => {
         // Getting the tile on the enemy board to set it to higlighted
         let enemyTile = this.enemyBoardTiles.find(
           selectedTile =>
