@@ -148,7 +148,7 @@
             (mouseup)="enemyBoardClicked($event)"
           ></canvas>
           <button
-            [disabled]="!enemySelected && !isTurn"
+            [disabled]="!isTurn || !enemySelected"
             (click)="fire()"
             id="fireBtn"
           >
