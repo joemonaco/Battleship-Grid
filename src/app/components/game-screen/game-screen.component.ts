@@ -460,6 +460,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
         if (data.hit) {
           this.enemyBoardContext.fillStyle = "red";
+          this.playerBoardContext.fillStyle = "red";
+
           // if (this.winner) {
           //   console.log("enemys all gone");
           //   // this.gameService.isWinner();
@@ -467,10 +469,20 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
           // }
         } else {
           this.enemyBoardContext.fillStyle = "lightblue";
+          this.playerBoardContext.fillStyle = "lightblue";
         }
 
         this.enemyBoardContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
         this.enemyBoardContext.stroke();
+        if (this.gameService.userID == data.uuid) {
+          this.playerBoardContext.fillRect(
+            enemyTile.topX,
+            enemyTile.topY,
+            40,
+            40
+          );
+          this.playerBoardContext.stroke();
+        }
       });
 
       this.enemySelected = false;
