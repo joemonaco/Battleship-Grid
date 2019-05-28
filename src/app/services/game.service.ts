@@ -23,6 +23,16 @@ export class GameService {
     this.socket.emit("reset");
   }
 
+  getState() {
+    let observable = new Observable(observer => {
+      this.socket.on("state", (data) => {
+        console.log("state", data);
+        observer.next(data);
+      });
+    });
+    return observable;
+  }
+
   register(userID) {
     this.socket.emit("register", userID);
     this.userID = userID;
