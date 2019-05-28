@@ -42,6 +42,9 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
   player: any;
 
+  //If it is the current players turn
+  isTurn = false;
+
   //For Hiding ships after they are placed, false means ship not placed
   // hideShip = [
   //   false,
@@ -117,6 +120,9 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       console.log(isReady);
       if (isReady) {
         this.store.dispatch(new BattleshipActions.GameReady());
+        if ((this.player = 1)) {
+          this.isTurn = true;
+        }
       }
     });
 
@@ -128,8 +134,18 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       console.log(turn);
       if (turn == "P1_TURN") {
         this.store.dispatch(new BattleshipActions.Player1Turn());
+        if (this.player == 1) {
+          this.isTurn = true;
+        } else {
+          this.isTurn = false;
+        }
       } else if (turn == "P2_TURN") {
         this.store.dispatch(new BattleshipActions.Player2Turn());
+        if (this.player == 2) {
+          this.isTurn = true;
+        } else {
+          this.isTurn = false;
+        }
       }
     });
 

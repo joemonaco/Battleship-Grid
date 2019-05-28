@@ -147,7 +147,11 @@
             height="400"
             (mouseup)="enemyBoardClicked($event)"
           ></canvas>
-          <button [disabled]="!enemySelected" (click)="fire()" id="fireBtn">
+          <button
+            [disabled]="!enemySelected && !isTurn"
+            (click)="fire()"
+            id="fireBtn"
+          >
             FIRE
           </button>
         </div>
