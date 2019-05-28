@@ -137,7 +137,7 @@
         ></canvas>
       </div>
     </div>
-    <div class="enemy-container" [hidden]="curState != 'READY'">
+    <div class="enemy-container" [hidden]="!gameStarted">
       <div class="enemy-board">
         <div dragula="ship">
           <canvas

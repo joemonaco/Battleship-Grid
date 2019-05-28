@@ -75,6 +75,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   enemyBoardCol: number = -1;
   enemySelected = false;
 
+  gameStarted = false;
+
   //The current state of the game
   curState: Observable<String>;
 
@@ -120,6 +122,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       console.log(isReady);
       if (isReady) {
         this.store.dispatch(new BattleshipActions.GameReady());
+        this.gameStarted = true;
         // if ((this.player = 1)) {
         //   this.isTurn = true;
         // }
