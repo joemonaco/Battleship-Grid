@@ -73,6 +73,10 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   //The current state of the game
   curState: Observable<String>;
 
+  readyClicked = false;
+
+
+
   constructor(
     private dragulaService: DragulaService,
     private store: Store<GameState>,
@@ -341,6 +345,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     console.log(this.playerShipTiles);
     this.drawGrid(false);
     // this.allShipsPlaced = false;
+
+    this.readyClicked = true;
 
     // this.gameService.sendArray(this.playerShipTiles);
     this.gameService.sendBoard(this.playerBoardTiles);

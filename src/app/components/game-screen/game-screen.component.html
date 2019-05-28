@@ -9,7 +9,7 @@
         (mouseup)="mouseDrop($event)"
       ></canvas>
       <button
-        [disabled]="!allShipsPlaced || curState == 'READY'"
+        [disabled]="!allShipsPlaced || readyClicked"
         (click)="readyUp()"
         id="rdyBtn"
       >
