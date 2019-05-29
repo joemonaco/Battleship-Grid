@@ -53,21 +53,21 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   enemyTilesHit = 0;
 
   //For Hiding ships after they are placed, false means ship not placed
-  hideShip = [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-  ];
+  // hideShip = [
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false
+  // ];
 
   /** FOR TESTING ONLY */
-  // hideShip = [true, true, true, true, true, true, true, true, true, false];
+  hideShip = [true, true, true, true, true, true, true, true, true, false];
 
   allShips: Ship[] = [];
   prevShips: PrevShip[] = [];
@@ -378,6 +378,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       }
       col++;
     }
+    // this.playerBoardContext.strokeStyle = "white";
   }
 
   /** Helper for drawing tiles on grid */
@@ -387,6 +388,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     context.stroke();
     context.moveTo(0, y);
     context.lineTo(400, y);
+    // context.strokeStyle = "white";
     context.stroke();
   }
 
@@ -474,6 +476,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       }
       console.log("PREV SHIPS", this.prevShips);
       this.prevShips.pop();
+      // this.playerBoardContext.strokeStyle = "white";
       this.playerBoardContext.stroke();
     }
   }
@@ -506,7 +509,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
         let firstTileIndex = this.playerBoardTiles.indexOf(tile);
 
         tile.isHighlighted = true;
-        this.playerBoardContext.fillStyle = "blue";
+        this.playerBoardContext.fillStyle = "rgb(85, 148, 173)";
 
         let prevShip: PrevShip = {
           row: dropRow,
@@ -562,7 +565,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
         if (this.hideShip.indexOf(false) == -1) {
           this.allShipsPlaced = true;
         }
-
+        // this.playerBoardContext.strokeStyle = "white";
         this.playerBoardContext.stroke();
       }
 
