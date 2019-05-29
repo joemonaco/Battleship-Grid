@@ -9,6 +9,7 @@ import {
 
 import { Tile } from "../../models/tile";
 import { Ship } from "../../models/ship";
+import { PrevShip } from "../../models/prevship";
 import { DragulaService } from "ng2-dragula";
 
 import { Observable } from "rxjs";
@@ -17,7 +18,6 @@ import { GameState } from "../../state-management/reducers/battleship.reducer";
 
 import * as BattleshipActions from "../../state-management/actions/battleship.actions";
 import { GameService } from "src/app/services/game.service";
-import { findReadVarNames } from "@angular/compiler/src/output/output_ast";
 
 @Component({
   selector: "app-game-screen",
@@ -70,6 +70,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   // hideShip = [true, true, true, true, true, true, true, true, true, false];
 
   allShips: Ship[] = [];
+  prevShips: PrevShip[] = [];
 
   //Checking if user picked up a ship
   didSelectShip: boolean = false;
@@ -415,62 +416,66 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   // prevShipFirstIndex;
 
   undoLast() {
-    //Find the tile on main board of where its dropped
-    let tile = this.playerBoardTiles.find(
-      selectedTile =>
-        selectedTile.row == this.prevShipRow &&
-        selectedTile.col == this.prevShipCol
-    );
+    if (this.prevShips.length != 0) {
+      let prevShip = this.prevShips[this.prevShips.length - 1];
 
-    //Get index for playerBoardTiles array to be able to add to playerShipTiles later
-    let firstTileIndex = this.playerBoardTiles.indexOf(tile);
-
-    tile.isHighlighted = false;
-    this.playerBoardContext.fillStyle = "white";
-
-    //If selected ship is vertical color tiles accordingly
-    if (this.allShips[this.prevShipIndex].isVertical) {
-      this.playerBoardContext.fillRect(
-        tile.topX,
-        tile.topY,
-        40,
-        40 * this.allShips[this.prevShipIndex].size
-      );
-      for (let i = 0; i < this.allShips[this.prevShipIndex].size; i++) {
-        // this.playerShipTiles.push(
-        //   this.playerBoardTiles[firstTileIndex + i]
-        // );
-        this.playerBoardTiles[firstTileIndex + i].isHighlighted = false;
-
-        //Hides the ship from the view so cant be dragged again
-        this.hideShip[this.prevShipIndex] = false;
-      }
-    } else {
-      this.playerBoardContext.fillRect(
-        tile.topX,
-        tile.topY,
-        40 * this.allShips[this.prevShipIndex].size,
-        40
+      //Find the tile on main board of where its dropped
+      let tile = this.playerBoardTiles.find(
+        selectedTile =>
+          selectedTile.row == prevShip.row && selectedTile.col == prevShip.col
       );
 
-      //Use 11 because 10x10 grid and every 11 is a new column but same row
-      let indexOffset = 11;
-      // this.playerShipTiles.push(this.playerBoardTiles[firstTileIndex]);
-      this.playerBoardTiles[firstTileIndex].isHighlighted = false;
-      for (let i = 0; i < this.curShipLen - 1; i++) {
-        // this.playerShipTiles.push(
-        //   this.playerBoardTiles[firstTileIndex + indexOffset]
-        // );
-        this.playerBoardTiles[
-          firstTileIndex + indexOffset
-        ].isHighlighted = false;
-        indexOffset += 11;
-        //Hides the ship from the view so cant be dragged again
-        this.hideShip[this.prevShipIndex] = false;
+      //Get index for playerBoardTiles array to be able to add to playerShipTiles later
+      let firstTileIndex = this.playerBoardTiles.indexOf(tile);
+
+      tile.isHighlighted = false;
+      this.playerBoardContext.fillStyle = "white";
+
+      //If selected ship is vertical color tiles accordingly
+      if (this.allShips[prevShip.index].isVertical) {
+        this.playerBoardContext.fillRect(
+          tile.topX,
+          tile.topY,
+          40,
+          40 * this.allShips[prevShip.index].size
+        );
+        for (let i = 0; i < this.allShips[prevShip.index].size; i++) {
+          // this.playerShipTiles.push(
+          //   this.playerBoardTiles[firstTileIndex + i]
+          // );
+          this.playerBoardTiles[firstTileIndex + i].isHighlighted = false;
+
+          //Hides the ship from the view so cant be dragged again
+          this.hideShip[prevShip.index] = false;
+        }
+      } else {
+        this.playerBoardContext.fillRect(
+          tile.topX,
+          tile.topY,
+          40 * this.allShips[prevShip.index].size,
+          40
+        );
+
+        //Use 11 because 10x10 grid and every 11 is a new column but same row
+        let indexOffset = 11;
+        // this.playerShipTiles.push(this.playerBoardTiles[firstTileIndex]);
+        this.playerBoardTiles[firstTileIndex].isHighlighted = false;
+        for (let i = 0; i < this.allShips[prevShip.index].size - 1; i++) {
+          // this.playerShipTiles.push(
+          //   this.playerBoardTiles[firstTileIndex + indexOffset]
+          // );
+          this.playerBoardTiles[
+            firstTileIndex + indexOffset
+          ].isHighlighted = false;
+          indexOffset += 11;
+          //Hides the ship from the view so cant be dragged again
+          this.hideShip[prevShip.index] = false;
+        }
       }
+      console.log("PREV SHIPS", this.prevShips);
+      this.prevShips.pop();
+      this.playerBoardContext.stroke();
     }
-
-    this.playerBoardContext.stroke();
   }
 
   //When user lets go of the ship ontop of the grid
@@ -486,7 +491,6 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       let dropCol = Math.trunc(e.offsetX / 40);
       this.prevShipRow = dropRow;
       this.prevShipCol = dropCol;
-
       //Find the tile on main board of where its dropped
       let tile = this.playerBoardTiles.find(
         selectedTile =>
@@ -503,6 +507,14 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
         tile.isHighlighted = true;
         this.playerBoardContext.fillStyle = "blue";
+
+        let prevShip: PrevShip = {
+          row: dropRow,
+          col: dropCol,
+          index: this.curShipId
+        };
+
+        this.prevShips.push(prevShip);
 
         //If selected ship is vertical color tiles accordingly
         if (this.curShipVertical) {

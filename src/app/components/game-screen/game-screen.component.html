@@ -18,7 +18,9 @@
     </div>
 
     <div class="ship-container">
-      <button class="undo" (click)="undoLast()">Undo Last Move</button>
+      <button class="undo" (click)="undoLast()" [disabled]="readyClicked">
+        Undo Last Move
+      </button>
       <div dragula="ship">
         <canvas
           id="0"
