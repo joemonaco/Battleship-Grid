@@ -1,3 +1,4 @@
+<h1>YOU ARE PLAYER {{ player }}</h1>
 <div class="main-container">
   <div class="container">
     <div dragula="ship">
@@ -18,9 +19,6 @@
     </div>
 
     <div class="ship-container">
-      <button class="undo" (click)="undoLast()" [hidden]="readyClicked">
-        Undo Last Move
-      </button>
       <div dragula="ship">
         <canvas
           id="0"
@@ -178,4 +176,7 @@
     </div>
   </div>
 </div>
-<button class="reset-btn" (click)="reset()">RESET</button>
+<button class="undo" (click)="undoLast()" [hidden]="readyClicked">
+  Undo Last Move
+</button>
+<!-- <button class="reset-btn" (click)="reset()">RESET</button> -->

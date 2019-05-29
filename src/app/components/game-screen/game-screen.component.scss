@@ -9,33 +9,23 @@ p {
   }
 }
 
-.reset-btn {
+h1 {
+  // padding-t: 60px;
+  // text-align: center;
+}
+
+.undo {
   font-size: 2rem;
   margin-top: 100px;
 }
 
-.undo {
-  margin-top: -60px;
-}
+// .undo {
+//   margin-bottom: 150px;
+// }
 
 .main-container {
   display: flex;
-  // h1 {
-  //   font-size: 1.5rem;
-  //   writing-mode: vertical-lr;
-  //   text-orientation: upright;
-  //   letter-spacing: -7.5px;
-  // }
-
-  // .enemy-container {
-  //   .nums {
-  //     h1 {
-  //       font-size: 1.5rem;
-  //       margin-left: 70px;
-  //       letter-spacing: 11px;
-  //     }
-  //   }
-  // }
+  margin-top: 50px;
 }
 
 .container {
