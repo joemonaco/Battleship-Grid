@@ -8,6 +8,7 @@ import {
 } from "@angular/core";
 
 import { Tile } from "../../models/tile";
+import { Ship } from "../../models/ship";
 import { DragulaService } from "ng2-dragula";
 
 import { Observable } from "rxjs";
@@ -51,21 +52,23 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   enemyTilesHit = 0;
 
   //For Hiding ships after they are placed, false means ship not placed
-  // hideShip = [
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false
-  // ];
+  hideShip = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ];
 
   /** FOR TESTING ONLY */
-  hideShip = [true, true, true, true, true, true, true, true, true, false];
+  // hideShip = [true, true, true, true, true, true, true, true, true, false];
+
+  allShips: Ship[] = [];
 
   //Checking if user picked up a ship
   didSelectShip: boolean = false;
@@ -116,14 +119,18 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     // console.log(this.gameService.userID);
   }
 
-  isReadySub;
-  isWinnerSub;
-  getPlayerSub;
-  getTurnSub;
-  getHitSub;
-  updateBoardSub;
-
+  isReadySub: any;
+  isWinnerSub: any;
+  getPlayerSub: any;
+  getTurnSub: any;
+  getHitSub: any;
+  updateBoardSub: any;
+  number = "40";
   ngOnInit() {
+    this.createShips();
+
+    console.log("WIDTH", this.allShips[0].width);
+    console.log("HEIGHT", this.allShips[0].height);
     this.store.select("battleship").subscribe(state => {
       this.curState = state;
     });
@@ -145,12 +152,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       this.winner = true;
       // if (player == this.player) {
       this.store.dispatch(new BattleshipActions.GameOver());
-      this.isReadySub.unsubcribe();
-      this.isWinnerSub.unsubcribe();
-      this.getPlayerSub.unsubcribe();
-      this.getTurnSub.unsubcribe();
-      this.getHitSub.unsubcribe();
-      this.updateBoardSub.unsubcribe();
+
       // }
     });
 
@@ -220,8 +222,91 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     this.gameService.register(this.getUUID());
   }
 
-  doFireStuff(data) {
-    console.log("do fire stuff", data);
+  createShips() {
+    let ship0: Ship = {
+      isVertical: true,
+      width: 40,
+      height: 160,
+      isHidden: false,
+      size: 4
+    };
+
+    let ship1: Ship = {
+      isVertical: false,
+      width: 160,
+      height: 40,
+      isHidden: false,
+      size: 4
+    };
+    let ship2: Ship = {
+      isVertical: true,
+      width: 40,
+      height: 120,
+      isHidden: false,
+      size: 3
+    };
+    let ship3: Ship = {
+      isVertical: false,
+      width: 120,
+      height: 40,
+      isHidden: false,
+      size: 3
+    };
+    let ship4: Ship = {
+      isVertical: true,
+      width: 40,
+      height: 120,
+      isHidden: false,
+      size: 3
+    };
+    let ship5: Ship = {
+      isVertical: false,
+      width: 80,
+      height: 40,
+      isHidden: false,
+      size: 2
+    };
+    let ship6: Ship = {
+      isVertical: true,
+      width: 40,
+      height: 80,
+      isHidden: false,
+      size: 2
+    };
+    let ship7: Ship = {
+      isVertical: false,
+      width: 80,
+      height: 40,
+      isHidden: false,
+      size: 2
+    };
+    let ship8: Ship = {
+      isVertical: true,
+      width: 40,
+      height: 80,
+      isHidden: false,
+      size: 2
+    };
+    let ship9: Ship = {
+      isVertical: false,
+      width: 200,
+      height: 40,
+      isHidden: false,
+      size: 5
+    };
+
+    // this.allShips.push(ship0);
+
+    this.allShips.push(ship0);
+    this.allShips.push(ship1);
+    this.allShips.push(ship2);
+    this.allShips.push(ship3);
+    this.allShips.push(ship4);
+    this.allShips.push(ship5);
+    this.allShips.push(ship6);
+    this.allShips.push(ship7);
+    this.allShips.push(ship8);
+    this.allShips.push(ship9);
   }
 
   ngOnDestroy() {
@@ -439,11 +524,25 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   }
 
   /** When a ship is selected */
-  shipClicked(event, shipLen, vert) {
-    this.curShipLen = shipLen;
-    this.curShipVertical = vert;
+  turnShip(event) {
+    this.curShipId = event.target.id;
+    let tempWidth = this.allShips[this.curShipId].width;
+    this.allShips[this.curShipId].width = this.allShips[this.curShipId].height;
+    this.allShips[this.curShipId].height = tempWidth;
+    this.allShips[this.curShipId].isVertical = !this.allShips[this.curShipId]
+      .isVertical;
+  }
+
+  shipClicked(event) {
     this.didSelectShip = !this.didSelectShip;
     this.curShipId = event.target.id;
+
+    this.curShipLen = this.allShips[this.curShipId].size;
+    this.curShipVertical = this.allShips[this.curShipId].isVertical;
+  }
+
+  doSomething() {
+    console.log("DRAGGING");
   }
 
   /** When user clicks ready */
