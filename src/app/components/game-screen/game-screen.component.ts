@@ -17,6 +17,7 @@ import { GameState } from "../../state-management/reducers/battleship.reducer";
 
 import * as BattleshipActions from "../../state-management/actions/battleship.actions";
 import { GameService } from "src/app/services/game.service";
+import { findReadVarNames } from "@angular/compiler/src/output/output_ast";
 
 @Component({
   selector: "app-game-screen",
@@ -408,6 +409,70 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     }
   }
 
+  prevShipRow;
+  prevShipCol;
+  prevShipIndex;
+  // prevShipFirstIndex;
+
+  undoLast() {
+    //Find the tile on main board of where its dropped
+    let tile = this.playerBoardTiles.find(
+      selectedTile =>
+        selectedTile.row == this.prevShipRow &&
+        selectedTile.col == this.prevShipCol
+    );
+
+    //Get index for playerBoardTiles array to be able to add to playerShipTiles later
+    let firstTileIndex = this.playerBoardTiles.indexOf(tile);
+
+    tile.isHighlighted = false;
+    this.playerBoardContext.fillStyle = "white";
+
+    //If selected ship is vertical color tiles accordingly
+    if (this.allShips[this.prevShipIndex].isVertical) {
+      this.playerBoardContext.fillRect(
+        tile.topX,
+        tile.topY,
+        40,
+        40 * this.allShips[this.prevShipIndex].size
+      );
+      for (let i = 0; i < this.allShips[this.prevShipIndex].size; i++) {
+        // this.playerShipTiles.push(
+        //   this.playerBoardTiles[firstTileIndex + i]
+        // );
+        this.playerBoardTiles[firstTileIndex + i].isHighlighted = false;
+
+        //Hides the ship from the view so cant be dragged again
+        this.hideShip[this.prevShipIndex] = false;
+      }
+    } else {
+      this.playerBoardContext.fillRect(
+        tile.topX,
+        tile.topY,
+        40 * this.allShips[this.prevShipIndex].size,
+        40
+      );
+
+      //Use 11 because 10x10 grid and every 11 is a new column but same row
+      let indexOffset = 11;
+      // this.playerShipTiles.push(this.playerBoardTiles[firstTileIndex]);
+      this.playerBoardTiles[firstTileIndex].isHighlighted = false;
+      for (let i = 0; i < this.curShipLen - 1; i++) {
+        // this.playerShipTiles.push(
+        //   this.playerBoardTiles[firstTileIndex + indexOffset]
+        // );
+        this.playerBoardTiles[
+          firstTileIndex + indexOffset
+        ].isHighlighted = false;
+        indexOffset += 11;
+        //Hides the ship from the view so cant be dragged again
+        this.hideShip[this.prevShipIndex] = false;
+      }
+    }
+
+    this.playerBoardContext.stroke();
+  }
+
   //When user lets go of the ship ontop of the grid
   mouseDrop(e) {
     // console.log(this.curShipLen);
@@ -419,6 +484,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       //Each tile is 40x40 so get the offset of canvas to give row and col of where mouse is
       let dropRow = Math.trunc(e.offsetY / 40);
       let dropCol = Math.trunc(e.offsetX / 40);
+      this.prevShipRow = dropRow;
+      this.prevShipCol = dropCol;
 
       //Find the tile on main board of where its dropped
       let tile = this.playerBoardTiles.find(
@@ -536,6 +603,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   shipClicked(event) {
     this.didSelectShip = !this.didSelectShip;
     this.curShipId = event.target.id;
+    this.prevShipIndex = this.curShipId;
 
     this.curShipLen = this.allShips[this.curShipId].size;
     this.curShipVertical = this.allShips[this.curShipId].isVertical;
