@@ -196,7 +196,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
           this.enemyBoardContext.fillStyle = "red";
         } else {
           console.log("hit false for player", data.uuid);
-          this.enemyBoardContext.fillStyle = "lightblue";
+          this.enemyBoardContext.fillStyle = "lightgray";
         }
 
         this.enemyBoardContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
@@ -213,7 +213,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
           if (data.hit) {
             this.playerBoardContext.fillStyle = "red";
           } else {
-            this.playerBoardContext.fillStyle = "lightblue";
+            this.playerBoardContext.fillStyle = "lightgray";
           }
 
           this.playerBoardContext.fillRect(data.topX, data.topY, 40, 40);
