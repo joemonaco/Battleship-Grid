@@ -85,7 +85,6 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   //The current state of the game
   curState: Observable<String>;
 
-  isReadySub: any;
   readyClicked = false;
 
   constructor(
@@ -117,13 +116,20 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     // console.log(this.gameService.userID);
   }
 
+  isReadySub;
+  isWinnerSub;
+  getPlayerSub;
+  getTurnSub;
+  getHitSub;
+  updateBoardSub;
+
   ngOnInit() {
     this.store.select("battleship").subscribe(state => {
       this.curState = state;
     });
 
     // console.log
-    this.gameService.checkReady().subscribe(isReady => {
+    this.isReadySub = this.gameService.checkReady().subscribe(isReady => {
       console.log(isReady);
       if (isReady) {
         this.store.dispatch(new BattleshipActions.GameReady());
@@ -134,20 +140,26 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       }
     });
 
-    this.gameService.isWinner().subscribe(player => {
+    this.isWinnerSub = this.gameService.isWinner().subscribe(player => {
       console.log(player, " is winner");
       this.winner = true;
       // if (player == this.player) {
       this.store.dispatch(new BattleshipActions.GameOver());
+      this.isReadySub.unsubcribe();
+      this.isWinnerSub.unsubcribe();
+      this.getPlayerSub.unsubcribe();
+      this.getTurnSub.unsubcribe();
+      this.getHitSub.unsubcribe();
+      this.updateBoardSub.unsubcribe();
       // }
     });
 
-    this.gameService.getPlayer().subscribe(data => {
+    this.getPlayerSub = this.gameService.getPlayer().subscribe(data => {
       console.log("getting data to be player: ", data);
       this.player = data;
     });
 
-    this.gameService.getTurn().subscribe(turn => {
+    this.getTurnSub = this.gameService.getTurn().subscribe(turn => {
       // console.log(turn);
       if (turn == "P1_TURN") {
         this.store.dispatch(new BattleshipActions.Player1Turn());
@@ -166,7 +178,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       }
     });
 
-    this.gameService.getHit().subscribe(data => {
+    this.getHitSub = this.gameService.getHit().subscribe(data => {
       if (data.uuid == this.gameService.userID) {
         // Getting the tile on the enemy board to set it to higlighted
         let enemyTile = this.enemyBoardTiles.find(
@@ -178,57 +190,53 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
         if (data.hit) {
           console.log("hit true for player", data.uuid);
           this.enemyBoardContext.fillStyle = "red";
-          this.playerBoardContext.fillStyle = "red";
         } else {
           console.log("hit false for player", data.uuid);
           this.enemyBoardContext.fillStyle = "lightblue";
-          this.playerBoardContext.fillStyle = "lightblue";
         }
 
         this.enemyBoardContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
         this.enemyBoardContext.stroke();
-
-        // if (this.gameService.userID != data.uuid) {
-        //   this.gameService.updateOtherBoard(enemyTile.topX, enemyTile.topY);
-        // }
       }
     });
 
-    this.gameService.updatePlayerBoard().subscribe(data => {
-      if (data.uuid == this.gameService.userID) {
-        console.log("update board");
-        // Getting the tile on the enemy board to set it to higlighted
-        let tile = this.playerBoardTiles.find(
-          selectedTile =>
-            selectedTile.row == data.row && selectedTile.col == data.col
-        );
-        tile.isHighlighted = true;
+    this.updateBoardSub = this.gameService
+      .updatePlayerBoard()
+      .subscribe(data => {
+        if (data.uuid == this.gameService.userID) {
+          console.log("update board");
 
-        if (data.hit) {
-          // this.enemyBoardContext.fillStyle = "red";
-          this.playerBoardContext.fillStyle = "red";
-        } else {
-          // this.enemyBoardContext.fillStyle = "lightblue";
-          this.playerBoardContext.fillStyle = "lightblue";
+          if (data.hit) {
+            this.playerBoardContext.fillStyle = "red";
+          } else {
+            this.playerBoardContext.fillStyle = "lightblue";
+          }
+
+          this.playerBoardContext.fillRect(data.topX, data.topY, 40, 40);
+          this.playerBoardContext.stroke();
         }
-
-        this.playerBoardContext.fillRect(data.topX, data.topY, 40, 40);
-        this.playerBoardContext.stroke();
-      }
-
-      // if (this.gameService.userID != data.uuid) {
-      //   this.gameService.updateOtherBoard(enemyTile.topX, enemyTile.topY);
-      // }
-    });
+      });
 
     this.gameService.register(this.getUUID());
-    // console.log(this.player);
+  }
+
+  doFireStuff(data) {
+    console.log("do fire stuff", data);
   }
 
   ngOnDestroy() {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.
+
+    console.log("in destory");
     this.gameService.resetGame();
+
+    this.isReadySub.unsubcribe();
+    this.isWinnerSub.unsubcribe();
+    this.getPlayerSub.unsubcribe();
+    this.getTurnSub.unsubcribe();
+    this.getHitSub.unsubcribe();
+    this.updateBoardSub.unsubcribe();
   }
 
   reset() {
