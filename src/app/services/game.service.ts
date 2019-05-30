@@ -57,6 +57,7 @@ export class GameService {
   sendAIboard(board: Tile[]) {
     this.socket.emit("board", { uuid: "AI", board: board });
     console.log("work");
+    console.log("work");
   }
 
   getPlayer(): Observable<any> {
