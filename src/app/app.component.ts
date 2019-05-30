@@ -15,6 +15,9 @@ export class AppComponent implements OnInit {
   //State of the game
   curState: String;
 
+  gamePicked = false;
+  singlePlayer: boolean;
+
   constructor(
     private gameService: GameService,
     private store: Store<GameState>
@@ -24,5 +27,16 @@ export class AppComponent implements OnInit {
     this.store.select("battleship").subscribe(state => {
       this.curState = state;
     });
+  }
+
+  chooseMode(singlePlayer) {
+    this.gamePicked = true;
+    if (singlePlayer) {
+      this.singlePlayer = true;
+    } else {
+      this.singlePlayer = false;
+    }
+
+    this.gameService.setGameMode(this.singlePlayer);
   }
 }

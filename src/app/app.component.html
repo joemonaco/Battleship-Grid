@@ -1,5 +1,9 @@
-<div class="whole-app">
-  <h1>BATTLESHIP!</h1>
+<h1>BATTLESHIP!</h1>
+<div class="buttons" [hidden]="gamePicked">
+  <button (click)="chooseMode(true)">Single Player</button>
+  <button (click)="chooseMode(false)">Multiplayer</button>
+</div>
+<div class="whole-app" [hidden]="!gamePicked">
   <app-game-screen [hidden]="curState == 'GAME_OVER'"></app-game-screen>
   <app-game-over [hidden]="curState != 'GAME_OVER'"></app-game-over>
 </div>

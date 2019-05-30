@@ -17,12 +17,24 @@ export class GameService {
 
   winningID: String;
 
+  singlePlayer: boolean;
+
   // sendArray(enemyArr: Tile[]) {
   //   this.socket.emit("enemyShipTiles", enemyArr);
   // }
 
   resetGame() {
     this.socket.emit("reset");
+  }
+
+  setGameMode(singlePlayer) {
+    if (singlePlayer) {
+      this.singlePlayer = true;
+    } else {
+      this.singlePlayer = false;
+    }
+
+    this.socket.emit("gameMode", this.singlePlayer);
   }
 
   register(userID) {
@@ -34,8 +46,16 @@ export class GameService {
     this.socket.emit("checkBoard", { row: row, col: col, uuid: this.userID });
   }
 
+  checkEnemyBoardAI(row, col) {
+    this.socket.emit("checkBoard", { row: row, col: col, uuid: "AI" });
+  }
+
   sendBoard(board: Tile[]) {
     this.socket.emit("board", { uuid: this.userID, board: board });
+  }
+
+  sendAIboard(board: Tile[]) {
+    this.socket.emit("board", { uuid: "AI", board: board });
   }
 
   getPlayer(): Observable<any> {

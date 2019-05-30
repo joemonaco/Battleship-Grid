@@ -21,6 +21,9 @@ export function reducer(
     case BattleshipActions.P1_TURN: {
       return BattleshipActions.P1_TURN;
     }
+    case BattleshipActions.SWITCH: {
+      return BattleshipActions.SWITCH;
+    }
     case BattleshipActions.P2_TURN: {
       return BattleshipActions.P2_TURN;
     }

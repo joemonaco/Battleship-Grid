@@ -9,6 +9,7 @@ import {
 
 import { Tile } from "../../models/tile";
 import { Ship } from "../../models/ship";
+import { LinkedList } from "../../models/linkedList";
 import { PrevShip } from "../../models/prevship";
 import { DragulaService } from "ng2-dragula";
 
@@ -90,6 +91,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   //The current state of the game
   curState: Observable<String>;
 
+  availableShots: LinkedList = new LinkedList();
+
   readyClicked = false;
 
   constructor(
@@ -127,14 +130,28 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   getTurnSub: any;
   getHitSub: any;
   updateBoardSub: any;
-  number = "40";
+
+  AIshots: Tile[] = [];
+
   ngOnInit() {
     this.createShips();
 
-    console.log("WIDTH", this.allShips[0].width);
-    console.log("HEIGHT", this.allShips[0].height);
     this.store.select("battleship").subscribe(state => {
       this.curState = state;
+      if (state == "P2_TURN") {
+        let randIndex = Math.floor(Math.random() * this.availableShots.length);
+        console.log("randIndex", randIndex);
+        let listElement = this.availableShots.remove(randIndex);
+
+        let tile = this.playerBoardTiles.find(
+          selectedTile =>
+            selectedTile.row == listElement.row &&
+            selectedTile.col == listElement.col
+        );
+
+        this.AIshots.push(tile);
+        this.gameService.checkEnemyBoardAI(tile.row, tile.col);
+      }
     });
 
     // console.log
@@ -166,6 +183,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     this.getTurnSub = this.gameService.getTurn().subscribe(turn => {
       // console.log(turn);
       if (turn == "P1_TURN") {
+        this.store.dispatch(new BattleshipActions.Switching());
         this.store.dispatch(new BattleshipActions.Player1Turn());
         if (this.player == 1) {
           this.isTurn = true;
@@ -173,6 +191,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
           this.isTurn = false;
         }
       } else if (turn == "P2_TURN") {
+        this.store.dispatch(new BattleshipActions.Switching());
         this.store.dispatch(new BattleshipActions.Player2Turn());
         if (this.player == 2) {
           this.isTurn = true;
@@ -193,7 +212,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
         if (data.hit) {
           console.log("hit true for player", data.uuid);
-          this.enemyBoardContext.fillStyle = "red";
+          this.enemyBoardContext.fillStyle = "#FA0E18";
         } else {
           console.log("hit false for player", data.uuid);
           this.enemyBoardContext.fillStyle = "lightgray";
@@ -211,7 +230,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
           console.log("update board");
 
           if (data.hit) {
-            this.playerBoardContext.fillStyle = "red";
+            this.playerBoardContext.fillStyle = "#FA0E18";
           } else {
             this.playerBoardContext.fillStyle = "lightgray";
           }
@@ -354,7 +373,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
     this.drawGrid(true);
 
-    // console.log(this.playerBoardTiles);
+    console.log(this.playerBoardTiles);
   }
 
   /** Draws tiles on the grid for the player */
@@ -363,9 +382,9 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     let col = 0;
 
     //Makes the rows and columns
-    for (let x = 0; x <= 400; x += 40) {
+    for (let x = 0; x < 400; x += 40) {
       row = 0;
-      for (let y = 0; y <= 400; y += 40) {
+      for (let y = 0; y < 400; y += 40) {
         //Making the tiles for the player
         if (isPlayerGrid) {
           this.drawTilesOnGrid(this.playerBoardContext, x, y);
@@ -458,8 +477,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
           40
         );
 
-        //Use 11 because 10x10 grid and every 11 is a new column but same row
-        let indexOffset = 11;
+        //Use 10 because 10x10 grid and every 10 is a new column but same row
+        let indexOffset = 10;
         // this.playerShipTiles.push(this.playerBoardTiles[firstTileIndex]);
         this.playerBoardTiles[firstTileIndex].isHighlighted = false;
         for (let i = 0; i < this.allShips[prevShip.index].size - 1; i++) {
@@ -469,7 +488,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
           this.playerBoardTiles[
             firstTileIndex + indexOffset
           ].isHighlighted = false;
-          indexOffset += 11;
+          indexOffset += 10;
           //Hides the ship from the view so cant be dragged again
           this.hideShip[prevShip.index] = false;
         }
@@ -544,8 +563,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
             40
           );
 
-          //Use 11 because 10x10 grid and every 11 is a new column but same row
-          let indexOffset = 11;
+          //Use 10 because 10x10 grid and every 10 is a new column but same row
+          let indexOffset = 10;
           this.playerShipTiles.push(this.playerBoardTiles[firstTileIndex]);
           this.playerBoardTiles[firstTileIndex].isHighlighted = true;
           for (let i = 0; i < this.curShipLen - 1; i++) {
@@ -555,7 +574,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
             this.playerBoardTiles[
               firstTileIndex + indexOffset
             ].isHighlighted = true;
-            indexOffset += 11;
+            indexOffset += 10;
             //Hides the ship from the view so cant be dragged again
             this.hideShip[this.curShipId] = true;
           }
@@ -594,12 +613,16 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
         }
       }
     } else {
-      let indexOffset = 11;
-      for (let i = 0; i < this.curShipLen; i++) {
+      let indexOffset = 10;
+      for (let i = 1; i < this.curShipLen; i++) {
+        console.log(
+          "firstTileIndex + indexOffset",
+          firstTileIndex + indexOffset
+        );
         if (this.playerBoardTiles[firstTileIndex + indexOffset].isHighlighted) {
           return false;
         }
-        indexOffset += 11;
+        indexOffset += 10;
       }
     }
     return true;
@@ -639,6 +662,12 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
     // this.gameService.sendArray(this.playerShipTiles);
     this.gameService.sendBoard(this.playerBoardTiles);
+
+    if (this.gameService.singlePlayer) {
+      this.createAIBoard();
+    }
+
+    console.log("PLAYER BOARD", this.playerBoardTiles);
   }
 
   /** When the user selects a tile on the enemy board */
@@ -675,7 +704,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
     //As long as the tile has not been fire before, make it yellow to show user they selected
     if (!tile.isHighlighted) {
-      this.enemyBoardContext.fillStyle = "yellow";
+      this.enemyBoardContext.fillStyle = "#9BCB4C";
       this.enemyBoardContext.fillRect(tile.topX, tile.topY, 40, 40);
       this.enemyBoardContext.stroke();
       //User has selected a spot; To make fire btn enabled
@@ -691,5 +720,130 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
       this.enemySelected = false;
     }
+  }
+
+  AIboard: Tile[] = [];
+  AIshipTiles: Tile[] = [];
+
+  createAIBoard() {
+    // const boardSizes = [5, 4, 4, 3, 3, 3, 2, 2, 2, 2];
+    const boardSizes = [5];
+
+    let row = 0;
+    let col = 0;
+    //Makes the rows and columns
+    for (let x = 0; x < 400; x += 40) {
+      row = 0;
+      for (let y = 0; y < 400; y += 40) {
+        //Making the tiles for the player
+        let tile = new Tile();
+        tile.row = row;
+        tile.col = col;
+        tile.topX = x;
+        tile.topY = y;
+        tile.botX = x + 40;
+        tile.botY = y + 40;
+        tile.isHit = false;
+        tile.isMiss = false;
+        tile.isHighlighted = false;
+        this.availableShots.append({ row: row, col: col });
+        this.AIboard.push(tile);
+        row++;
+      }
+      col++;
+    }
+
+    console.log("AI BOARd", this.AIboard);
+
+    let AIrows: number[] = [];
+    let AIcols: number[] = [];
+
+    boardSizes.forEach(size => {
+      let randRow = -1;
+      let randCol = -1;
+
+      while (!this.checkAIboard(randRow, randCol, size)) {
+        randRow = Math.floor(Math.random() * 9);
+        randCol = Math.floor(Math.random() * 9);
+      }
+
+      console.log("ADDING SHIP: ", size);
+    });
+
+    console.log("AI BOARd", this.AIboard);
+    console.log("AI SHIPS", this.AIshipTiles);
+
+    this.gameService.sendAIboard(this.AIboard);
+    this.AIboard = [];
+    this.AIshipTiles = [];
+  }
+
+  checkAIboard(row, col, size): boolean {
+    if (row != -1) {
+      let tile = this.AIboard.find(
+        selectedTile => selectedTile.row == row && selectedTile.col == col
+      );
+
+      if (tile.isHighlighted) {
+        return false;
+      } else {
+        let firstTileIndex = this.AIboard.indexOf(tile);
+        let vert = Math.round(Math.random());
+        console.log("vert is", vert);
+        if (vert == 0) {
+          for (let i = 0; i < size; i++) {
+            //Checks to make sure that ship isnt going off the board
+            if (this.AIboard[firstTileIndex + i].row > 9) {
+              return false;
+            }
+
+            if (this.AIboard[firstTileIndex + i].isHighlighted) {
+              return false;
+            }
+          }
+        } else {
+          let indexOffset = 10;
+          for (let i = 0; i < size; i++) {
+            if (row + size > 9 || col + size > 9) {
+              return false;
+            }
+            console.log(
+              "firstTileIndex + indexOffset",
+              this.AIboard[firstTileIndex + indexOffset]
+            );
+
+            if (this.AIboard[firstTileIndex + indexOffset].isHighlighted) {
+              return false;
+            }
+            indexOffset += 10;
+          }
+        }
+
+        //If selected ship is vertical color tiles accordingly
+        if (vert == 0) {
+          for (let i = 0; i < size; i++) {
+            // this.AIboard.push(
+            //   this.AIboard[firstTileIndex + i]
+            // );
+            this.AIboard[firstTileIndex + i].isHighlighted = true;
+            this.AIshipTiles.push(this.AIboard[firstTileIndex + i]);
+          }
+        } else {
+          //Use 10 because 10x10 grid and every 10 is a new column but same row
+          let indexOffset = 10;
+
+          this.AIboard[firstTileIndex].isHighlighted = true;
+          this.AIshipTiles.push(this.AIboard[firstTileIndex]);
+          for (let i = 0; i < size - 1; i++) {
+            this.AIshipTiles.push(this.AIboard[firstTileIndex + indexOffset]);
+            this.AIboard[firstTileIndex + indexOffset].isHighlighted = true;
+            indexOffset += 10;
+            //Hides the ship from the view so cant be dragged again
+          }
+        }
+        return true;
+      }
+    }
+    return false;
   }
 }

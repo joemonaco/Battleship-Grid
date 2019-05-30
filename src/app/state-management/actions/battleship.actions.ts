@@ -9,6 +9,7 @@ export const P2_TURN = "P2_TURN";
 
 //Game is over when all ships of one player are destroyed
 export const GAME_OVER = "GAME_OVER";
+export const SWITCH = "SWITCH";
 
 export class GameReady implements Action {
   readonly type = READY;
@@ -37,6 +38,18 @@ export class GameOver implements Action {
   constructor() {}
 }
 
-export type Actions = GameReady | Player1Turn | Player2Turn | GameOver;
+export class Switching implements Action {
+  readonly type = SWITCH;
+
+  //payload here will be a tile coord
+  constructor() {}
+}
+
+export type Actions =
+  | GameReady
+  | Player1Turn
+  | Switching
+  | Player2Turn
+  | GameOver;
 
 // export type Actions = AddTutorial | RemoveTutorial;
