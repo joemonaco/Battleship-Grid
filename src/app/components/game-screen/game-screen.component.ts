@@ -54,21 +54,21 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   enemyTilesHit = 0;
 
   //For Hiding ships after they are placed, false means ship not placed
-  // hideShip = [
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false
-  // ];
+  hideShip = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ];
 
   /** FOR TESTING ONLY */
-  hideShip = [true, true, true, true, true, true, true, true, true, false];
+  // hideShip = [true, true, true, true, true, true, true, true, true, false];
 
   allShips: Ship[] = [];
   prevShips: PrevShip[] = [];
@@ -726,8 +726,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   AIshipTiles: Tile[] = [];
 
   createAIBoard() {
-    // const boardSizes = [5, 4, 4, 3, 3, 3, 2, 2, 2, 2];
-    const boardSizes = [5];
+    const boardSizes = [5, 4, 4, 3, 3, 3, 2, 2, 2, 2];
+    // const boardSizes = [5];
 
     let row = 0;
     let col = 0;
