@@ -25,6 +25,13 @@ function createWindow() {
 
   win.webContents.openDevTools();
 
+  win.webContents.on('did-finish-load', function() {
+    win.webContents.send('socket_address', 'http://192.168.162.190:8000');
+    win.webContents.setZoomFactor(1);
+    win.webContents.setVisualZoomLevelLimits(1, 1);
+    win.webContents.setLayoutZoomLevelLimits(0, 0);
+  });
+
   win.on("closed", () => {
     win = null;
   });
