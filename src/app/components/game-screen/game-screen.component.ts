@@ -19,6 +19,7 @@ import { GameState } from "../../state-management/reducers/battleship.reducer";
 
 import * as BattleshipActions from "../../state-management/actions/battleship.actions";
 import { GameService } from "src/app/services/game.service";
+import * as $ from 'jquery';
 
 @Component({
   selector: "app-game-screen",
@@ -95,30 +96,15 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
   readyClicked = false;
 
+  targetCanvas: any;
+
   constructor(
     private dragulaService: DragulaService,
     private store: Store<GameState>,
     private gameService: GameService
   ) {
     //Creating the dragula group to make ships draggable
-    dragulaService.createGroup("ship", {
-      removeOnSpill: false,
-      revertOnSpill: true,
-      accepts: function(el, target) {
-        return false;
-      },
-      invalid: function(el, handle) {
-        if (
-          el.id == "board" ||
-          el.id == "rdyBtn" ||
-          el.id == "enemyBoard" ||
-          el.id == "fireBtn"
-        ) {
-          return true;
-        }
-        return false;
-      }
-    });
+    
 
     // this.gameService.setID();
     // console.log(this.gameService.userID);
@@ -135,6 +121,46 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
   ngOnInit() {
     this.createShips();
+    // 
+    
+    
+  
+
+    // this.dragulaService.drag("ship")
+    //   .subscribe(({ name, el, source }) => {
+    //    document.getElementById(el.id)
+    //   })
+
+    this.dragulaService.createGroup("ship", {
+      removeOnSpill: false,
+      revertOnSpill: true,
+      accepts: function(el, target) {
+        // // console.log('TARGET', target);
+        // this.canvasTarget = target;
+        // console.log(this.canvasTarget)
+        return false;
+      },
+      invalid: function(el, handle) {
+        if (
+          el.id == "board" ||
+          el.id == "rdyBtn" ||
+          el.id == "enemyBoard" ||
+          el.id == "fireBtn"
+        ) {
+          return true;
+        }
+        return false;
+      },
+      
+    })
+
+      // this.dragulaService.drop("ship")
+      // .subscribe(({ name, el, target, source, sibling }) => {
+      //   console.log("TARGET: ");
+      //   console.log(target);
+      //   console.log("SOURCE: ");
+      //   console.log(source);
+      // })
 
     this.store.select("battleship").subscribe(state => {
       this.curState = state;
@@ -500,17 +526,60 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     }
   }
 
+  touchEnd(e) {
+    // console.log(e);
+
+    let boundingRectBoard = document.getElementById('board').getBoundingClientRect();
+    console.log(boundingRectBoard);
+
+    if(this.shipXPos > boundingRectBoard.left && this.shipXPos < boundingRectBoard.right) {
+      if(this.shipYPos > boundingRectBoard.top && this.shipYPos < boundingRectBoard.bottom) {
+        let col = Math.trunc(this.shipXPos / 40);
+        let row = Math.trunc((this.shipYPos - boundingRectBoard.top) / 40);
+        this.mouseDrop(row, col);
+      }
+    }
+
+  }
+
+  shipXPos = -1;
+  shipYPos = -1;
+
+
+  touchMove(e) {
+    //  console.log('PAGE X',Math.trunc(e.touches[0].pageX));
+    //  console.log('PAGE Y', Math.trunc(e.touches[0].pageY));
+
+     this.shipXPos = e.touches[0].pageX;
+     this.shipYPos = e.touches[0].pageY;
+    //  console.log(e);
+
+    //  let board = document.getElementById('board');
+
+     
+  }
+
   //When user lets go of the ship ontop of the grid
-  mouseDrop(e) {
+  mouseDrop(dropRow, dropCol) {
     // console.log(this.curShipLen);
     // console.log(this.curShipVertical);
     // console.log("player number is", this.player);
+    // e.preventDefault();
+
+    // console.log("MOUSE DROP");
+    // // console.log(target);
+
+    // console.log(e);
+    // // console.log(e.touches[0].pageX - e.touches[0].target.offsetLeft);
+    // console.log(Math.trunc(e.clientX / 40));
+    // console.log(Math.trunc(e.clientY / 40));
+
 
     //Makes sure that allShipsPlaced hasnt been clicked and that a ship is selected
     if (this.didSelectShip) {
       //Each tile is 40x40 so get the offset of canvas to give row and col of where mouse is
-      let dropRow = Math.trunc(e.offsetY / 40);
-      let dropCol = Math.trunc(e.offsetX / 40);
+      // let dropRow = Math.trunc(e.offsetY / 40);
+      // let dropCol = Math.trunc(e.offsetX / 40);
       this.prevShipRow = dropRow;
       this.prevShipCol = dropCol;
       //Find the tile on main board of where its dropped
@@ -638,7 +707,10 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       .isVertical;
   }
 
-  shipClicked(event) {
+  shipClicked(event) 
+  {
+    console.log("ship clicked");
+    // event.preventDefault();
     this.didSelectShip = !this.didSelectShip;
     this.curShipId = event.target.id;
     this.prevShipIndex = this.curShipId;

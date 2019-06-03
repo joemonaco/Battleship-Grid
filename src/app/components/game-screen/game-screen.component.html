@@ -7,7 +7,7 @@
         #playerBoardEl
         width="400"
         height="400"
-        (mouseup)="mouseDrop($event)"
+        (touchend)="mouseDrop($event)"
       ></canvas>
       <button
         [disabled]="!allShipsPlaced || readyClicked"
@@ -27,7 +27,9 @@
           height="{{ allShips[0].height }}"
           [hidden]="hideShip[0]"
           (dblclick)="turnShip($event)"
-          (mousedown)="shipClicked($event)"
+          (touchstart)="shipClicked($event)"
+          (touchmove)="touchMove($event)"
+          (touchend)="touchEnd($event)"
         ></canvas>
       </div>
 
@@ -40,7 +42,9 @@
           height="{{ allShips[1].height }}"
           [hidden]="hideShip[1]"
           (dblclick)="turnShip($event)"
-          (mousedown)="shipClicked($event)"
+          (touchstart)="shipClicked($event)"
+          (touchmove)="touchMove($event)"
+          (touchend)="touchEnd($event)"
         ></canvas>
       </div>
 
@@ -53,7 +57,9 @@
           height="{{ allShips[2].height }}"
           [hidden]="hideShip[2]"
           (dblclick)="turnShip($event)"
-          (mousedown)="shipClicked($event)"
+          (touchstart)="shipClicked($event)"
+          (touchmove)="touchMove($event)"
+          (touchend)="touchEnd($event)"
         ></canvas>
       </div>
 
@@ -66,7 +72,9 @@
           height="{{ allShips[3].height }}"
           [hidden]="hideShip[3]"
           (dblclick)="turnShip($event)"
-          (mousedown)="shipClicked($event)"
+          (touchstart)="shipClicked($event)"
+          (touchmove)="touchMove($event)"
+          (touchend)="touchEnd($event)"
         ></canvas>
       </div>
 
@@ -79,7 +87,9 @@
           height="{{ allShips[4].height }}"
           [hidden]="hideShip[4]"
           (dblclick)="turnShip($event)"
-          (mousedown)="shipClicked($event)"
+          (touchstart)="shipClicked($event)"
+          (touchmove)="touchMove($event)"
+          (touchend)="touchEnd($event)"
         ></canvas>
       </div>
 
@@ -92,7 +102,9 @@
           height="{{ allShips[5].height }}"
           [hidden]="hideShip[5]"
           (dblclick)="turnShip($event)"
-          (mousedown)="shipClicked($event)"
+          (touchstart)="shipClicked($event)"
+          (touchmove)="touchMove($event)"
+          (touchend)="touchEnd($event)"
         ></canvas>
       </div>
 
@@ -105,7 +117,9 @@
           height="{{ allShips[6].height }}"
           [hidden]="hideShip[6]"
           (dblclick)="turnShip($event)"
-          (mousedown)="shipClicked($event)"
+          (touchstart)="shipClicked($event)"
+          (touchmove)="touchMove($event)"
+          (touchend)="touchEnd($event)"
         ></canvas>
       </div>
       <div dragula="ship">
@@ -117,7 +131,9 @@
           height="{{ allShips[7].height }}"
           [hidden]="hideShip[7]"
           (dblclick)="turnShip($event)"
-          (mousedown)="shipClicked($event)"
+          (touchstart)="shipClicked($event)"
+          (touchmove)="touchMove($event)"
+          (touchend)="touchEnd($event)"
         ></canvas>
       </div>
 
@@ -130,7 +146,9 @@
           height="{{ allShips[8].height }}"
           [hidden]="hideShip[8]"
           (dblclick)="turnShip($event)"
-          (mousedown)="shipClicked($event)"
+          (touchstart)="shipClicked($event)"
+          (touchmove)="touchMove($event)"
+          (touchend)="touchEnd($event)"
         ></canvas>
       </div>
 
@@ -143,7 +161,9 @@
           height="{{ allShips[9].height }}"
           [hidden]="hideShip[9]"
           (dblclick)="turnShip($event)"
-          (mousedown)="shipClicked($event)"
+          (touchstart)="shipClicked($event)"
+          (touchmove)="touchMove($event)"
+          (touchend)="touchEnd($event)"
         ></canvas>
       </div>
     </div>

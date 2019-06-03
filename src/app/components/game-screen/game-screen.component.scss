@@ -99,7 +99,11 @@ canvas:hover {
 .gu-transit {
   opacity: 1;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
-  background-color: rgb(85, 148, 173);
+  background-color: rgb(111, 117, 119);
   filter: alpha(opacity=20);
   background-color: transparent;
+}
+
+.drag-drop-item {
+  touch-action: none;
 }
