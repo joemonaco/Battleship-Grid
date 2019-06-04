@@ -610,7 +610,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   }
 
   //When user lets go of the ship ontop of the grid
-  mouseDrop(dropRow, dropCol) {
+  mouseDrop(dropRow, dropCol, e?) {
 
 
     // console.log(this.curShipLen);
@@ -630,8 +630,10 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     //Makes sure that allShipsPlaced hasnt been clicked and that a ship is selected
     if (this.didSelectShip) {
       //Each tile is 40x40 so get the offset of canvas to give row and col of where mouse is
-      // let dropRow = Math.trunc(e.offsetY / 40);
-      // let dropCol = Math.trunc(e.offsetX / 40);
+      if(dropRow == null) {
+        dropRow = Math.trunc(e.offsetY / 40);
+        dropCol = Math.trunc(e.offsetX / 40);
+      }
       this.prevShipRow = dropRow;
       this.prevShipCol = dropCol;
       //Find the tile on main board of where its dropped
