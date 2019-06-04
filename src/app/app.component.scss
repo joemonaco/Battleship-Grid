@@ -1,14 +1,20 @@
+@import url('https://fonts.googleapis.com/css?family=Righteous&display=swap');
 h1 {
   text-align: center;
-  font-size: 3rem;
-  color: red;
+  font-size: 8rem;
+  color: #C52233;
+  font-family: 'Righteous', cursive;
+  margin-top: -10px;
 }
 
 .buttons {
-  text-align: center;
+  justify-content: space-evenly;
 
   button {
-    margin-right: 50px;
-    font-size: 3rem;
+    padding: 15px;
+    font-size: 5rem;
+    border-radius: 20px;
+    font-family: 'Righteous', cursive;
+    border: solid black 5px;
   }
 }

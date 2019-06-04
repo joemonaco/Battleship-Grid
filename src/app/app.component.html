@@ -1,5 +1,5 @@
 <h1>BATTLESHIP!!</h1>
-<div class="buttons" [hidden]="gamePicked">
+<div class="buttons" [ngStyle]="{'display': gamePicked ? 'none' : 'flex' }">
   <button (click)="chooseMode(true)">Single Player</button>
   <button (click)="chooseMode(false)">Multiplayer</button>
 </div>

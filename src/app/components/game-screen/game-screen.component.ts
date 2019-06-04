@@ -21,12 +21,24 @@ import * as BattleshipActions from "../../state-management/actions/battleship.ac
 import { GameService } from "src/app/services/game.service";
 import * as $ from 'jquery';
 
+import { trigger, transition, useAnimation } from '@angular/animations';
+import { pulse, fadeIn } from 'ng-animate';
+
 @Component({
   selector: "app-game-screen",
   templateUrl: "./game-screen.component.html",
-  styleUrls: ["./game-screen.component.scss"]
+  styleUrls: ["./game-screen.component.scss"],
+  animations: [
+    trigger('pulse', [transition(':enter', useAnimation(pulse))]),
+    // trigger('fadeIn', [transition('', useAnimation(fadeIn))]),
+  ]
 })
 export class GameScreenComponent implements AfterViewInit, OnInit {
+
+  pulse: any;
+  fadeIn: any;
+  myDelay = 9999999;
+
   /** Template reference to the canvas element */
   @ViewChild("playerBoardEl") playerBoardEl: ElementRef;
   @ViewChild("enemyBoardEl") enemyBoardEl: ElementRef;
@@ -119,6 +131,31 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
   AIshots: Tile[] = [];
 
+  boardStyle = {};
+  enemyBoardStyle = {};
+
+  changeBoardStyle(player) {
+
+    if(player == 0) {
+    this.boardStyle = { 
+    'background':'red',
+    'color':'#fff',
+    'animation-name': 'flash',
+    'animation-duration': '2s',
+    'animation-timing-function': 'linear',
+    'animation-iteration-count': 'infinite'}
+    }
+    else {
+      this.enemyBoardStyle = { 
+        'background':'red',
+        'color':'#fff',
+        'animation-name': 'flash',
+        'animation-duration': '2s',
+        'animation-timing-function': 'linear',
+        'animation-iteration-count': 'infinite'}
+    }
+  }
+
   ngOnInit() {
     this.createShips();
     // 
@@ -184,8 +221,10 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     this.isReadySub = this.gameService.checkReady().subscribe(isReady => {
       console.log(isReady);
       if (isReady) {
+
         this.store.dispatch(new BattleshipActions.GameReady());
         this.gameStarted = true;
+        this.myDelay = 2;
         if (this.player == 1) {
           this.isTurn = true;
         }
@@ -239,6 +278,10 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
         if (data.hit) {
           console.log("hit true for player", data.uuid);
           this.enemyBoardContext.fillStyle = "#FA0E18";
+          this.changeBoardStyle(1);
+          setTimeout(() => {
+            this.enemyBoardStyle = {};
+          }, 1000);
         } else {
           console.log("hit false for player", data.uuid);
           this.enemyBoardContext.fillStyle = "lightgray";
@@ -246,6 +289,13 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
         this.enemyBoardContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
         this.enemyBoardContext.stroke();
+      } else {
+        if(data.hit) {
+          this.changeBoardStyle(0);
+          setTimeout(() => {
+            this.boardStyle = {};
+          }, 1000);
+        }
       }
     });
 
@@ -549,7 +599,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   touchMove(e) {
     //  console.log('PAGE X',Math.trunc(e.touches[0].pageX));
     //  console.log('PAGE Y', Math.trunc(e.touches[0].pageY));
-
+    console.log('TOUCH');
      this.shipXPos = e.touches[0].pageX;
      this.shipYPos = e.touches[0].pageY;
     //  console.log(e);
@@ -561,12 +611,14 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
   //When user lets go of the ship ontop of the grid
   mouseDrop(dropRow, dropCol) {
+
+
     // console.log(this.curShipLen);
     // console.log(this.curShipVertical);
     // console.log("player number is", this.player);
     // e.preventDefault();
 
-    // console.log("MOUSE DROP");
+    console.log("MOUSE DROP");
     // // console.log(target);
 
     // console.log(e);

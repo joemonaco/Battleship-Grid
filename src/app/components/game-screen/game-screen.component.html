@@ -1,4 +1,5 @@
 <h1>YOU ARE PLAYER {{ player }}</h1>
+
 <div class="main-container">
   <div class="container">
     <div dragula="ship">
@@ -7,10 +8,20 @@
         #playerBoardEl
         width="400"
         height="400"
-        (touchend)="mouseDrop($event)"
+        [ngStyle]="boardStyle"
       ></canvas>
       <button
         [disabled]="!allShipsPlaced || readyClicked"
+        [hidden]="allShipsPlaced"
+        (click)="readyUp()"
+        id="rdyBtn"
+      >
+        READY
+      </button>
+      <button
+        class="flash-btn"
+        [disabled]="!allShipsPlaced || readyClicked"
+        [hidden]="!allShipsPlaced || gameStarted"
         (click)="readyUp()"
         id="rdyBtn"
       >
@@ -168,6 +179,7 @@
       </div>
     </div>
     <div class="enemy-container" [hidden]="!gameStarted">
+        
       <div class="enemy-board">
         <ng-container *ngIf="isTurn; else notTurn">
           <h1>Your Turn!</h1>
@@ -183,6 +195,7 @@
             width="400"
             height="400"
             (mouseup)="enemyBoardClicked($event)"
+            [ngStyle]="enemyBoardStyle"
           ></canvas>
           <button
             [disabled]="!isTurn || !enemySelected"
@@ -193,10 +206,11 @@
           </button>
         </div>
       </div>
+      
     </div>
   </div>
 </div>
-<button class="undo" (click)="undoLast()" [hidden]="readyClicked">
+<button class="undo" (click)="undoLast()" [hidden]="readyClicked" [disabled]="prevShips.length == 0">
   Undo Last Move
 </button>
 <!-- <button class="reset-btn" (click)="reset()">RESET</button> -->

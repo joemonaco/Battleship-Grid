@@ -10,19 +10,19 @@
   
 </head>
 <body>
-    <% if (BUILD_TYPE === 'prod') { %>
-      <script>
-      const ipcR = require('electron').ipcRenderer;
-      ipcR.on('network_address', function(event, arg){
-        console.log("SEND " + arg);
-        localStorage.setItem('network_address', arg)
-      });
-      ipcR.on('socket_address', function(event, arg){
-        console.log("SEND " + arg);
-        localStorage.setItem('socket_address', arg)
-      });
-      </script>
-      <% } %>
+  
+    <script>
+    // System.set('electron', System.newModule(require('electron')));
+    const ipcR = require('electron').ipcRenderer;
+    ipcR.on('network_address', function(event, arg){
+      console.log("SEND " + arg);
+      localStorage.setItem('network_address', arg)
+    });
+    ipcR.on('socket_address', function(event, arg){
+      console.log("SEND " + arg);
+      localStorage.setItem('socket_address', arg)
+    });
+    </script>
   <app-root></app-root>
 </body>
 </html>

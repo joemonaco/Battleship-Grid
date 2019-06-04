@@ -12,14 +12,16 @@ import { reducer } from "./state-management/reducers/battleship.reducer";
 import { SocketIoModule, SocketIoConfig } from "ngx-socket-io";
 import { GameService } from "src/app/services/game.service";
 import { GameOverComponent } from "./components/game-over/game-over.component";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-const config: SocketIoConfig = { url: "http://192.168.162.190:8000", options: {} };
+const config: SocketIoConfig = { url: "http://174.138.111.227:8000", options: {} };
 // const config: SocketIoConfig = { url: localStorage.getItem('socket_address') , options: {} };
 
 @NgModule({
   declarations: [AppComponent, GameScreenComponent, GameOverComponent],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
     DragulaModule.forRoot(),
     StoreModule.forRoot({
