@@ -4,6 +4,7 @@ import { GameState } from "../../state-management/reducers/battleship.reducer";
 
 import * as BattleshipActions from "../../state-management/actions/battleship.actions";
 import { GameService } from "src/app/services/game.service";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-game-over",
@@ -13,7 +14,8 @@ import { GameService } from "src/app/services/game.service";
 export class GameOverComponent implements OnInit {
   constructor(
     private gameService: GameService,
-    private store: Store<GameState>
+    private store: Store<GameState>,
+    private router: Router
   ) {}
 
   didWin = false;
@@ -28,6 +30,11 @@ export class GameOverComponent implements OnInit {
         this.didWin = true;
       }
     });
+
+    setTimeout(() => {
+      this.store.dispatch(new BattleshipActions.NotReady());
+      this.router.navigate(["/main-menu"]);
+    }, 10000);
 
     // if (this.gameService.userID == this.gameService.winningID) {
     //   console.log("true");

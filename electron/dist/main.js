@@ -18,8 +18,8 @@ function createWindow() {
         slashes: true
     }));
     win.webContents.openDevTools();
-    win.webContents.on('did-finish-load', function () {
-        win.webContents.send('socket_address', '174.138.111.227:8000');
+    win.webContents.on("did-finish-load", function () {
+        win.webContents.send("socket_address", "174.138.111.227:8000");
         win.webContents.setZoomFactor(1);
         win.webContents.setVisualZoomLevelLimits(1, 1);
         win.webContents.setLayoutZoomLevelLimits(0, 0);

@@ -6,7 +6,7 @@ import {
   OnInit,
   OnDestroy
 } from "@angular/core";
-
+import { Router } from "@angular/router";
 import { Tile } from "../../models/tile";
 import { Ship } from "../../models/ship";
 import { LinkedList } from "../../models/linkedList";
@@ -19,33 +19,42 @@ import { GameState } from "../../state-management/reducers/battleship.reducer";
 
 import * as BattleshipActions from "../../state-management/actions/battleship.actions";
 import { GameService } from "src/app/services/game.service";
-import * as $ from 'jquery';
+import * as $ from "jquery";
 
-import { trigger, transition, useAnimation } from '@angular/animations';
-import { pulse, fadeIn } from 'ng-animate';
+import { trigger, transition, useAnimation } from "@angular/animations";
+import { pulse, fadeIn } from "ng-animate";
+import { first } from "rxjs/operators";
+import {
+  DomSanitizer,
+  SafeResourceUrl,
+  SafeUrl
+} from "@angular/platform-browser";
 
 @Component({
   selector: "app-game-screen",
   templateUrl: "./game-screen.component.html",
   styleUrls: ["./game-screen.component.scss"],
   animations: [
-    trigger('pulse', [transition(':enter', useAnimation(pulse))]),
+    trigger("pulse", [transition(":enter", useAnimation(pulse))])
     // trigger('fadeIn', [transition('', useAnimation(fadeIn))]),
   ]
 })
 export class GameScreenComponent implements AfterViewInit, OnInit {
-
   pulse: any;
   fadeIn: any;
   myDelay = 9999999;
 
+  showLoading = false;
+
   /** Template reference to the canvas element */
   @ViewChild("playerBoardEl") playerBoardEl: ElementRef;
   @ViewChild("enemyBoardEl") enemyBoardEl: ElementRef;
+  @ViewChild("ship1") ship1: ElementRef;
 
   /** Canvas 2d context */
   playerBoardContext: CanvasRenderingContext2D;
   enemyBoardContext: CanvasRenderingContext2D;
+  ship1Context: CanvasRenderingContext2D;
 
   //Tiles for Player Board, Players ships, Enemy Board
   playerBoardTiles: Tile[] = [];
@@ -113,11 +122,11 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   constructor(
     private dragulaService: DragulaService,
     private store: Store<GameState>,
-    private gameService: GameService
+    private gameService: GameService,
+    private router: Router,
+    private _sanitizer: DomSanitizer
   ) {
     //Creating the dragula group to make ships draggable
-    
-
     // this.gameService.setID();
     // console.log(this.gameService.userID);
   }
@@ -134,34 +143,46 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   boardStyle = {};
   enemyBoardStyle = {};
 
-  changeBoardStyle(player) {
+  fireStyle = {};
 
-    if(player == 0) {
-    this.boardStyle = { 
-    'background':'red',
-    'color':'#fff',
-    'animation-name': 'flash',
-    'animation-duration': '2s',
-    'animation-timing-function': 'linear',
-    'animation-iteration-count': 'infinite'}
-    }
-    else {
-      this.enemyBoardStyle = { 
-        'background':'red',
-        'color':'#fff',
-        'animation-name': 'flash',
-        'animation-duration': '2s',
-        'animation-timing-function': 'linear',
-        'animation-iteration-count': 'infinite'}
+  changeBoardStyle(player) {
+    if (player == 0) {
+      this.boardStyle = {
+        background: "red",
+        color: "#fff",
+        "animation-name": "flash",
+        "animation-duration": "0.3s",
+        "animation-timing-function": "linear",
+        "animation-iteration-count": "1"
+      };
+    } else {
+      this.enemyBoardStyle = {
+        background: "red",
+        color: "#fff",
+        "animation-name": "flash",
+        "animation-duration": "0.3s",
+        "animation-timing-function": "linear",
+        "animation-iteration-count": "1"
+      };
     }
   }
 
+  playHitAudio() {
+    let audio = new Audio();
+    audio.src = "./assets/sounds/boom.wav";
+    audio.load();
+    audio.play();
+  }
+  playMissAudio() {
+    let audio = new Audio();
+    audio.src = "./assets/sounds/miss.wav";
+    audio.load();
+    audio.play();
+  }
+
   ngOnInit() {
+    //
     this.createShips();
-    // 
-    
-    
-  
 
     // this.dragulaService.drag("ship")
     //   .subscribe(({ name, el, source }) => {
@@ -187,17 +208,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
           return true;
         }
         return false;
-      },
-      
-    })
-
-      // this.dragulaService.drop("ship")
-      // .subscribe(({ name, el, target, source, sibling }) => {
-      //   console.log("TARGET: ");
-      //   console.log(target);
-      //   console.log("SOURCE: ");
-      //   console.log(source);
-      // })
+      }
+    });
 
     this.store.select("battleship").subscribe(state => {
       this.curState = state;
@@ -215,13 +227,16 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
         this.AIshots.push(tile);
         this.gameService.checkEnemyBoardAI(tile.row, tile.col);
       }
+      if (state == "WAITING") {
+        this.router.navigate(["/loading"]);
+      }
     });
 
     // console.log
     this.isReadySub = this.gameService.checkReady().subscribe(isReady => {
       console.log(isReady);
       if (isReady) {
-
+        this.showLoading = false;
         this.store.dispatch(new BattleshipActions.GameReady());
         this.gameStarted = true;
         this.myDelay = 2;
@@ -231,11 +246,18 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       }
     });
 
+    this.gameService.checkGameStatus().subscribe(gameInProgress => {
+      if (gameInProgress) {
+        this.store.dispatch(new BattleshipActions.Waiting());
+      }
+    });
+
     this.isWinnerSub = this.gameService.isWinner().subscribe(player => {
       console.log(player, " is winner");
       this.winner = true;
       // if (player == this.player) {
       this.store.dispatch(new BattleshipActions.GameOver());
+      this.router.navigate(["/game-over"]);
 
       // }
     });
@@ -276,13 +298,15 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
         enemyTile.isHighlighted = true;
 
         if (data.hit) {
+          this.playHitAudio();
           console.log("hit true for player", data.uuid);
-          this.enemyBoardContext.fillStyle = "#FA0E18";
+          this.enemyBoardContext.fillStyle = "red";
           this.changeBoardStyle(1);
           setTimeout(() => {
             this.enemyBoardStyle = {};
-          }, 1000);
+          }, 300);
         } else {
+          this.playMissAudio();
           console.log("hit false for player", data.uuid);
           this.enemyBoardContext.fillStyle = "lightgray";
         }
@@ -290,11 +314,14 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
         this.enemyBoardContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
         this.enemyBoardContext.stroke();
       } else {
-        if(data.hit) {
+        if (data.hit) {
+          this.playHitAudio();
           this.changeBoardStyle(0);
           setTimeout(() => {
             this.boardStyle = {};
-          }, 1000);
+          }, 300);
+        } else {
+          this.playMissAudio();
         }
       }
     });
@@ -306,7 +333,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
           console.log("update board");
 
           if (data.hit) {
-            this.playerBoardContext.fillStyle = "#FA0E18";
+            this.playerBoardContext.fillStyle = "rgba(255, 0, 0, 0.3)";
           } else {
             this.playerBoardContext.fillStyle = "lightgray";
           }
@@ -321,11 +348,16 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
   createShips() {
     let ship0: Ship = {
-      isVertical: true,
-      width: 40,
-      height: 160,
+      isVertical: false,
+      width: 160,
+      height: 40,
       isHidden: false,
-      size: 4
+      size: 4,
+      img: "./assets/ship4",
+      imgV: "./assets/ship4-v",
+      style: {
+        background: "url(./assets/ship4.PNG)"
+      }
     };
 
     let ship1: Ship = {
@@ -333,63 +365,108 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       width: 160,
       height: 40,
       isHidden: false,
-      size: 4
+      size: 4,
+      img: "./assets/ship4-1",
+      imgV: "./assets/ship4-1-v",
+      style: {
+        background: "url(./assets/ship4-1.PNG)"
+      }
     };
     let ship2: Ship = {
-      isVertical: true,
-      width: 40,
-      height: 120,
+      isVertical: false,
+      width: 120,
+      height: 40,
       isHidden: false,
-      size: 3
+      size: 3,
+      img: "./assets/ship3",
+      imgV: "./assets/ship3-v",
+      style: {
+        background: "url(./assets/ship3.PNG)"
+      }
     };
     let ship3: Ship = {
       isVertical: false,
       width: 120,
       height: 40,
       isHidden: false,
-      size: 3
+      size: 3,
+      img: "./assets/ship3-1",
+      imgV: "./assets/ship3-1-v",
+      style: {
+        background: "url(./assets/ship3-1.PNG)"
+      }
     };
     let ship4: Ship = {
-      isVertical: true,
-      width: 40,
-      height: 120,
+      isVertical: false,
+      width: 120,
+      height: 40,
       isHidden: false,
-      size: 3
+      size: 3,
+      img: "./assets/ship3-1",
+      imgV: "./assets/ship3-1-v",
+      style: {
+        background: "url(./assets/ship3-1.PNG)"
+      }
     };
     let ship5: Ship = {
       isVertical: false,
       width: 80,
       height: 40,
       isHidden: false,
-      size: 2
+      size: 2,
+      img: "./assets/ship2",
+      imgV: "./assets/ship2-v",
+      style: {
+        background: "url(./assets/ship2.PNG)"
+      }
     };
     let ship6: Ship = {
-      isVertical: true,
-      width: 40,
-      height: 80,
+      isVertical: false,
+      width: 80,
+      height: 40,
       isHidden: false,
-      size: 2
+      size: 2,
+      img: "./assets/ship2",
+      imgV: "./assets/ship2-v",
+      style: {
+        background: "url(./assets/ship2.PNG)"
+      }
     };
     let ship7: Ship = {
       isVertical: false,
       width: 80,
       height: 40,
       isHidden: false,
-      size: 2
+      size: 2,
+      img: "./assets/ship2",
+      imgV: "./assets/ship2-v",
+      style: {
+        background: "url(./assets/ship2.PNG)"
+      }
     };
     let ship8: Ship = {
-      isVertical: true,
-      width: 40,
-      height: 80,
+      isVertical: false,
+      width: 80,
+      height: 40,
       isHidden: false,
-      size: 2
+      size: 2,
+      img: "./assets/ship2",
+      imgV: "./assets/ship2-v",
+      style: {
+        background: "url(./assets/ship2.PNG)"
+      }
     };
     let ship9: Ship = {
       isVertical: false,
       width: 200,
       height: 40,
       isHidden: false,
-      size: 5
+      size: 5,
+      img: "./assets/ship5",
+      imgV: "./assets/ship5-v",
+      style: {
+        background: "url(./assets/ship5.PNG)"
+      }
     };
 
     // this.allShips.push(ship0);
@@ -407,18 +484,16 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   }
 
   ngOnDestroy() {
-    //Called once, before the instance is destroyed.
-    //Add 'implements OnDestroy' to the class.
-
-    console.log("in destory");
-    this.gameService.resetGame();
-
-    this.isReadySub.unsubcribe();
-    this.isWinnerSub.unsubcribe();
-    this.getPlayerSub.unsubcribe();
-    this.getTurnSub.unsubcribe();
-    this.getHitSub.unsubcribe();
-    this.updateBoardSub.unsubcribe();
+    //   //Called once, before the instance is destroyed.
+    //   //Add 'implements OnDestroy' to the class.
+    //   console.log("in destory");
+    // this.gameService.resetGame();
+    //   this.isReadySub.unsubcribe();
+    //   this.isWinnerSub.unsubcribe();
+    //   this.getPlayerSub.unsubcribe();
+    //   this.getTurnSub.unsubcribe();
+    //   this.getHitSub.unsubcribe();
+    //   this.updateBoardSub.unsubcribe();
   }
 
   reset() {
@@ -445,6 +520,9 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       .nativeElement as HTMLCanvasElement).getContext("2d");
 
     this.enemyBoardContext = (this.enemyBoardEl
+      .nativeElement as HTMLCanvasElement).getContext("2d");
+
+    this.ship1Context = (this.ship1
       .nativeElement as HTMLCanvasElement).getContext("2d");
 
     this.drawGrid(true);
@@ -507,12 +585,19 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     }
   }
 
+  getShip(index) {
+    return this._sanitizer.bypassSecurityTrustStyle(
+      URL.createObjectURL(this.allShips[index].img)
+    );
+  }
+
   prevShipRow;
   prevShipCol;
   prevShipIndex;
   // prevShipFirstIndex;
 
   undoLast() {
+    this.allShipsPlaced = false;
     if (this.prevShips.length != 0) {
       let prevShip = this.prevShips[this.prevShips.length - 1];
 
@@ -526,7 +611,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       let firstTileIndex = this.playerBoardTiles.indexOf(tile);
 
       tile.isHighlighted = false;
-      this.playerBoardContext.fillStyle = "white";
+      this.playerBoardContext.fillStyle = "#faf7f2";
 
       //If selected ship is vertical color tiles accordingly
       if (this.allShips[prevShip.index].isVertical) {
@@ -579,40 +664,45 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   touchEnd(e) {
     // console.log(e);
 
-    let boundingRectBoard = document.getElementById('board').getBoundingClientRect();
+    let boundingRectBoard = document
+      .getElementById("board")
+      .getBoundingClientRect();
     console.log(boundingRectBoard);
 
-    if(this.shipXPos > boundingRectBoard.left && this.shipXPos < boundingRectBoard.right) {
-      if(this.shipYPos > boundingRectBoard.top && this.shipYPos < boundingRectBoard.bottom) {
-        let col = Math.trunc(this.shipXPos / 40);
+    if (
+      this.shipXPos > boundingRectBoard.left &&
+      this.shipXPos < boundingRectBoard.right
+    ) {
+      if (
+        this.shipYPos > boundingRectBoard.top &&
+        this.shipYPos < boundingRectBoard.bottom
+      ) {
+        let col = Math.trunc((this.shipXPos - boundingRectBoard.left) / 40);
         let row = Math.trunc((this.shipYPos - boundingRectBoard.top) / 40);
+
+        console.log(row);
+        console.log(col);
         this.mouseDrop(row, col);
       }
     }
-
   }
 
   shipXPos = -1;
   shipYPos = -1;
 
-
   touchMove(e) {
-    //  console.log('PAGE X',Math.trunc(e.touches[0].pageX));
-    //  console.log('PAGE Y', Math.trunc(e.touches[0].pageY));
-    console.log('TOUCH');
-     this.shipXPos = e.touches[0].pageX;
-     this.shipYPos = e.touches[0].pageY;
+    console.log("PAGE X", Math.trunc(e.touches[0].pageX));
+    console.log("PAGE Y", Math.trunc(e.touches[0].pageY));
+    console.log("TOUCH");
+    this.shipXPos = e.touches[0].pageX;
+    this.shipYPos = e.touches[0].pageY;
     //  console.log(e);
 
     //  let board = document.getElementById('board');
-
-     
   }
 
   //When user lets go of the ship ontop of the grid
   mouseDrop(dropRow, dropCol, e?) {
-
-
     // console.log(this.curShipLen);
     // console.log(this.curShipVertical);
     // console.log("player number is", this.player);
@@ -626,11 +716,10 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     // console.log(Math.trunc(e.clientX / 40));
     // console.log(Math.trunc(e.clientY / 40));
 
-
     //Makes sure that allShipsPlaced hasnt been clicked and that a ship is selected
     if (this.didSelectShip) {
       //Each tile is 40x40 so get the offset of canvas to give row and col of where mouse is
-      if(dropRow == null) {
+      if (dropRow == null) {
         dropRow = Math.trunc(e.offsetY / 40);
         dropCol = Math.trunc(e.offsetX / 40);
       }
@@ -678,6 +767,10 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
             //Hides the ship from the view so cant be dragged again
             this.hideShip[this.curShipId] = true;
           }
+
+          let img = new Image();
+          img.src = this.allShips[this.curShipId].imgV + ".PNG";
+          this.playerBoardContext.drawImage(img, tile.topX, tile.topY);
         } else {
           this.playerBoardContext.fillRect(
             tile.topX,
@@ -701,6 +794,10 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
             //Hides the ship from the view so cant be dragged again
             this.hideShip[this.curShipId] = true;
           }
+
+          let img = new Image();
+          img.src = this.allShips[this.curShipId].img + ".PNG";
+          this.playerBoardContext.drawImage(img, tile.topX, tile.topY);
         }
 
         //Checks if all the ships have been placed
@@ -726,7 +823,14 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
     if (this.curShipVertical) {
       for (let i = 0; i < this.curShipLen; i++) {
+        if (this.playerBoardTiles[firstTileIndex].row == 9) {
+          return false;
+        }
         //Checks to make sure that ship isnt going off the board
+        console.log(
+          "firstIndex + i",
+          this.playerBoardTiles[firstTileIndex + i].row
+        );
         if (this.playerBoardTiles[firstTileIndex + i].row > 9) {
           return false;
         }
@@ -759,10 +863,19 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     this.allShips[this.curShipId].height = tempWidth;
     this.allShips[this.curShipId].isVertical = !this.allShips[this.curShipId]
       .isVertical;
+
+    if (this.allShips[this.curShipId].isVertical) {
+      this.allShips[this.curShipId].style = {
+        background: "url(" + this.allShips[this.curShipId].imgV + ".PNG)"
+      };
+    } else {
+      this.allShips[this.curShipId].style = {
+        background: "url(" + this.allShips[this.curShipId].img + ".PNG)"
+      };
+    }
   }
 
-  shipClicked(event) 
-  {
+  shipClicked(event) {
     console.log("ship clicked");
     // event.preventDefault();
     this.didSelectShip = !this.didSelectShip;
@@ -779,6 +892,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
   /** When user clicks ready */
   readyUp() {
+    this.showLoading = true;
     this.allShipsPlaced = true;
     // console.log(this.playerShipTiles);
     this.drawGrid(false);
@@ -810,7 +924,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
     //If user chooses new tile make the old one white
     if (tile != null && !tile.isHighlighted) {
-      this.enemyBoardContext.fillStyle = "white";
+      this.enemyBoardContext.fillStyle = "#faf7f2";
       this.enemyBoardContext.fillRect(tile.topX, tile.topY, 40, 40);
     }
 

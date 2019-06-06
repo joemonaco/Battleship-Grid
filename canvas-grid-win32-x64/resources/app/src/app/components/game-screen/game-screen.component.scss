@@ -1,0 +1,165 @@
+@import url("https://fonts.googleapis.com/css?family=Righteous&display=swap");
+
+p {
+  font-family: Lato;
+}
+.nums {
+  h1 {
+    font-size: 1.5rem;
+    margin-left: 70px;
+    letter-spacing: 11px;
+    font-family: "Righteous", cursive;
+  }
+}
+
+h1 {
+  font-family: "Righteous", cursive;
+}
+
+// .undo {
+//   margin-bottom: 150px;
+// }
+
+.main-container {
+  display: flex;
+  margin-top: 50px;
+  justify-content: center;
+}
+
+.container {
+  display: flex;
+  width: 400px;
+  height: 400px;
+  justify-content: center;
+
+  button {
+    font-family: "Righteous", cursive;
+    width: 404px;
+    // height: 60px;
+    justify-content: center;
+    font-size: 3rem;
+    border-radius: 5px;
+    border: solid 2px black;
+  }
+
+  .undo {
+    margin-top: 15px;
+    font-size: 2rem;
+    width: 300px;
+    margin-left: 50px;
+  }
+}
+
+.flash-btn {
+  background: green;
+
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  border: solid 2px black;
+
+  animation-name: flash;
+  animation-duration: 1s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.fire-flash {
+  background: red;
+
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  border: solid 2px black;
+
+  animation-name: flash;
+  animation-duration: 1s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes flash {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.enemy-board {
+  // margin-top: -80px;
+}
+
+.turn {
+  text-align: center;
+  h1 {
+    margin-top: -100px;
+    font-family: "Righteous", cursive;
+    font-size: 4.5rem;
+    color: #336699;
+  }
+}
+
+.ship {
+  background-color: rgb(85, 148, 173);
+  align-content: center;
+  // margin-right: -px;
+}
+
+.ship-container {
+  display: inline-grid;
+  grid-template-columns: auto auto auto;
+}
+
+.board-hit {
+  background: red;
+
+  color: #fff;
+  animation-name: flash;
+  animation-duration: 2s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+canvas {
+  margin-right: 50px;
+  border: 2px solid black;
+  transition: 300ms;
+  border-radius: 4px;
+}
+
+/* in-flight clone */
+.gu-mirror {
+  position: fixed !important;
+  margin: 0 !important;
+  z-index: 9999 !important;
+  opacity: 1;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+  //   filter: alpha(opacity=200);
+  pointer-events: none;
+  background-color: rgb(85, 148, 173);
+}
+
+/* high-performance display:none; helper */
+.gu-hide {
+  display: none;
+}
+/* added to mirrorContainer (default = body) while dragging */
+.gu-unselectable {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+}
+/* added to the source element while its mirror is dragged */
+.gu-transit {
+  opacity: 1;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+  background-color: rgb(111, 117, 119);
+  filter: alpha(opacity=20);
+  background-color: transparent;
+}

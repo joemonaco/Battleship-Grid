@@ -18,20 +18,29 @@ export class GameService {
 
   winningID: String;
 
-
   // sendArray(enemyArr: Tile[]) {
   //   this.socket.emit("enemyShipTiles", enemyArr);
   // }
 
   setGameMode(singlePlayer) {
-
-    if(singlePlayer) {
+    if (singlePlayer) {
       this.singlePlayer = true;
     } else {
       this.singlePlayer = false;
     }
 
     this.socket.emit("gameMode", this.singlePlayer);
+  }
+
+  checkGameStatus(): Observable<any> {
+    let observable = new Observable(observer => {
+      this.socket.on("gameInProgress", data => {
+        console.log("gameInProgress", data);
+        observer.next(data);
+      });
+      return () => {};
+    });
+    return observable;
   }
 
   resetGame() {

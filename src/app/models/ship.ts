@@ -4,4 +4,7 @@ export class Ship {
   height: number;
   isHidden: boolean;
   size: number;
+  img: string;
+  imgV: string;
+  style?: any;
 }

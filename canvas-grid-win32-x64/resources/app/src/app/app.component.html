@@ -1,0 +1,9 @@
+<h1 [hidden]="curState == 'GAME_OVER'">BATTLESHIP!!</h1>
+<div class="buttons" [ngStyle]="{ display: gamePicked ? 'none' : 'flex' }">
+  <button (click)="chooseMode(true)">Single Player</button>
+  <button (click)="chooseMode(false)">Multiplayer</button>
+</div>
+<div class="whole-app" [hidden]="!gamePicked">
+  <app-game-screen [hidden]="curState == 'GAME_OVER'"></app-game-screen>
+  <app-game-over [hidden]="curState != 'GAME_OVER'"></app-game-over>
+</div>

@@ -1,0 +1,237 @@
+<div class="loading" [hidden]="!showLoading">
+  <app-loading></app-loading>
+</div>
+
+<div class="game" [hidden]="showLoading">
+  <div class="turn" [hidden]="!gameStarted">
+    <ng-container *ngIf="isTurn; else notTurn">
+      <h1>Your Turn!</h1>
+    </ng-container>
+    <ng-template #notTurn>
+      <h1>Please Wait for other Player</h1>
+    </ng-template>
+  </div>
+  <div class="main-container">
+    <div class="container">
+      <div dragula="ship" class="board-container">
+        <canvas
+          id="board"
+          #playerBoardEl
+          width="400"
+          height="400"
+          [ngStyle]="boardStyle"
+          (mouseup)="mouseDrop(null, null, $event)"
+        ></canvas>
+        <button
+          [disabled]="!allShipsPlaced || readyClicked"
+          [hidden]="allShipsPlaced"
+          (click)="readyUp()"
+          id="rdyBtn"
+        >
+          READY
+        </button>
+        <button
+          class="flash-btn"
+          [disabled]="!allShipsPlaced || readyClicked"
+          [hidden]="!allShipsPlaced || gameStarted"
+          (click)="readyUp()"
+          id="rdyBtn"
+        >
+          READY
+        </button>
+        <button
+          class="undo"
+          (click)="undoLast()"
+          [hidden]="readyClicked"
+          [disabled]="prevShips.length == 0"
+        >
+          Undo Last Move
+        </button>
+      </div>
+
+      <div class="ship-container">
+        <div dragula="ship">
+          <canvas
+            id="0"
+            class="ship"
+            width="{{ allShips[0].width }}"
+            height="{{ allShips[0].height }}"
+            [hidden]="hideShip[0]"
+            (dblclick)="turnShip($event)"
+            (touchmove)="touchMove($event)"
+            (touchend)="touchEnd($event)"
+            (pointerdown)="shipClicked($event)"
+          ></canvas>
+        </div>
+
+        <div dragula="ship">
+          <canvas
+            id="1"
+            class="ship"
+            #shipEl2
+            width="{{ allShips[1].width }}"
+            height="{{ allShips[1].height }}"
+            [hidden]="hideShip[1]"
+            (dblclick)="turnShip($event)"
+            (pointerdown)="shipClicked($event)"
+            (touchmove)="touchMove($event)"
+            (touchend)="touchEnd($event)"
+          ></canvas>
+        </div>
+
+        <div dragula="ship">
+          <canvas
+            id="2"
+            class="ship"
+            #shipEl1
+            width="{{ allShips[2].width }}"
+            height="{{ allShips[2].height }}"
+            [hidden]="hideShip[2]"
+            (dblclick)="turnShip($event)"
+            (pointerdown)="shipClicked($event)"
+            (touchmove)="touchMove($event)"
+            (touchend)="touchEnd($event)"
+          ></canvas>
+        </div>
+
+        <div dragula="ship">
+          <canvas
+            id="3"
+            class="ship"
+            #shipEl2
+            width="{{ allShips[3].width }}"
+            height="{{ allShips[3].height }}"
+            [hidden]="hideShip[3]"
+            (dblclick)="turnShip($event)"
+            (pointerdown)="shipClicked($event)"
+            (touchmove)="touchMove($event)"
+            (touchend)="touchEnd($event)"
+          ></canvas>
+        </div>
+
+        <div dragula="ship">
+          <canvas
+            id="4"
+            class="ship"
+            #shipEl2
+            width="{{ allShips[4].width }}"
+            height="{{ allShips[4].height }}"
+            [hidden]="hideShip[4]"
+            (dblclick)="turnShip($event)"
+            (pointerdown)="shipClicked($event)"
+            (touchmove)="touchMove($event)"
+            (touchend)="touchEnd($event)"
+          ></canvas>
+        </div>
+
+        <div dragula="ship">
+          <canvas
+            id="5"
+            class="ship"
+            #shipEl2
+            width="{{ allShips[5].width }}"
+            height="{{ allShips[5].height }}"
+            [hidden]="hideShip[5]"
+            (dblclick)="turnShip($event)"
+            (pointerdown)="shipClicked($event)"
+            (touchmove)="touchMove($event)"
+            (touchend)="touchEnd($event)"
+          ></canvas>
+        </div>
+
+        <div dragula="ship">
+          <canvas
+            id="6"
+            class="ship"
+            #shipEl2
+            width="{{ allShips[6].width }}"
+            height="{{ allShips[6].height }}"
+            [hidden]="hideShip[6]"
+            (dblclick)="turnShip($event)"
+            (pointerdown)="shipClicked($event)"
+            (touchmove)="touchMove($event)"
+            (touchend)="touchEnd($event)"
+          ></canvas>
+        </div>
+        <div dragula="ship">
+          <canvas
+            id="7"
+            class="ship"
+            #shipEl2
+            width="{{ allShips[7].width }}"
+            height="{{ allShips[7].height }}"
+            [hidden]="hideShip[7]"
+            (dblclick)="turnShip($event)"
+            (pointerdown)="shipClicked($event)"
+            (touchmove)="touchMove($event)"
+            (touchend)="touchEnd($event)"
+          ></canvas>
+        </div>
+
+        <div dragula="ship">
+          <canvas
+            id="8"
+            class="ship"
+            #shipEl2
+            width="{{ allShips[8].width }}"
+            height="{{ allShips[8].height }}"
+            [hidden]="hideShip[8]"
+            (dblclick)="turnShip($event)"
+            (pointerdown)="shipClicked($event)"
+            (touchmove)="touchMove($event)"
+            (touchend)="touchEnd($event)"
+          ></canvas>
+        </div>
+
+        <div dragula="ship">
+          <canvas
+            id="9"
+            class="ship"
+            #shipEl2
+            width="{{ allShips[9].width }}"
+            height="{{ allShips[9].height }}"
+            [hidden]="hideShip[9]"
+            (dblclick)="turnShip($event)"
+            (pointerdown)="shipClicked($event)"
+            (touchmove)="touchMove($event)"
+            (touchend)="touchEnd($event)"
+          ></canvas>
+        </div>
+      </div>
+      <div class="enemy-container" [hidden]="!gameStarted">
+        <div class="enemy-board">
+          <div dragula="ship">
+            <canvas
+              id="enemyBoard"
+              #enemyBoardEl
+              width="400"
+              height="400"
+              (mouseup)="enemyBoardClicked($event)"
+              [ngStyle]="enemyBoardStyle"
+            ></canvas>
+            <button
+              [disabled]="!isTurn || !enemySelected"
+              [hidden]="enemySelected"
+              (click)="fire()"
+              id="fireBtn"
+              [ngStyle]="fireStyle"
+            >
+              FIRE
+            </button>
+            <button
+              [hidden]="!enemySelected || !isTurn"
+              (click)="fire()"
+              id="fireBtn"
+              class="fire-flash"
+              [ngStyle]="fireStlye"
+            >
+              FIRE
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- <button class="reset-btn" (click)="reset()">RESET</button> -->
+</div>

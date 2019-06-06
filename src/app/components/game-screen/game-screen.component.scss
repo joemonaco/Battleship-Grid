@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Righteous&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Righteous&display=swap");
 
 p {
   font-family: Lato;
@@ -8,23 +8,12 @@ p {
     font-size: 1.5rem;
     margin-left: 70px;
     letter-spacing: 11px;
-    font-family: 'Righteous', cursive;
+    font-family: "Righteous", cursive;
   }
 }
 
 h1 {
-  // padding-t: 60px;
-  // text-align: center;
-  font-family: 'Righteous', cursive;
-}
-
-.undo {
-  font-size: 2rem;
-  margin-top: 100px;
-  margin-left: 60px;
-  font-family: 'Righteous', cursive;
-  border-radius: 5px;
-    border: solid 2px black;
+  font-family: "Righteous", cursive;
 }
 
 // .undo {
@@ -34,46 +23,86 @@ h1 {
 .main-container {
   display: flex;
   margin-top: 50px;
+  justify-content: center;
+  position: relative;
 }
 
 .container {
   display: flex;
   width: 400px;
   height: 400px;
+  justify-content: center;
 
   button {
-    font-family: 'Righteous', cursive;
+    font-family: "Righteous", cursive;
     width: 404px;
     // height: 60px;
     justify-content: center;
     font-size: 3rem;
     border-radius: 5px;
     border: solid 2px black;
+  }
+
+  .undo {
+    margin-top: 15px;
+    font-size: 2rem;
+    width: 300px;
+    margin-left: 50px;
+  }
 }
 
-.flash-btn{
-	background:green;
+.flash-btn {
+  background: green;
 
-	color:#fff;
-	border:none;
-  border-radius:5px;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
   border: solid 2px black;
-	
-	animation-name: flash;
-	animation-duration: 1s;
-	animation-timing-function: linear;
-	animation-iteration-count: infinite;
-}
+
+  animation-name: flash;
+  animation-duration: 1s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }
 
-@keyframes flash {  
-  0% { opacity: 1.0; }
-  50% { opacity: 0.1; }
-  100% { opacity: 1.0; }
+.fire-flash {
+  background: red;
+
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  border: solid 2px black;
+
+  animation-name: flash;
+  animation-duration: 0.5s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes flash {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.1;
+  }
+  // 100% {
+  //   opacity: 1;
+  // }
 }
 
 .enemy-board {
-  margin-top: -80px;
+  // margin-top: -80px;
+}
+
+.turn {
+  text-align: center;
+  h1 {
+    margin-top: -100px;
+    font-family: "Righteous", cursive;
+    font-size: 4.5rem;
+    color: #336699;
+  }
 }
 
 .ship {
@@ -84,30 +113,26 @@ h1 {
 
 .ship-container {
   display: inline-grid;
-  grid-template-columns: auto auto auto;
+  // grid-template-columns: 200px 200px 200px;
+  // position: relative;
 }
-
-
 
 .board-hit {
-  background:red;
+  background: red;
 
-	color:#fff;
+  color: #fff;
   animation-name: flash;
-	animation-duration: 2s;
-	animation-timing-function: linear;
-	animation-iteration-count: infinite;
+  animation-duration: 0.4s;
+  animation-timing-function: linear;
+  animation-iteration-count: 1;
 }
 
-canvas {
+#board,
+#enemyBoard {
   margin-right: 50px;
   border: 2px solid black;
   transition: 300ms;
   border-radius: 4px;
-}
-
-canvas:hover {
-  border: 2px solid rgba(0, 0, 0, 0.54);
 }
 
 /* in-flight clone */

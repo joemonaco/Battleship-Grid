@@ -18,6 +18,12 @@ export function reducer(
     case BattleshipActions.READY: {
       return BattleshipActions.READY;
     }
+    case BattleshipActions.WAITING: {
+      return BattleshipActions.WAITING;
+    }
+    case BattleshipActions.NOT_READY: {
+      return BattleshipActions.NOT_READY;
+    }
     case BattleshipActions.P1_TURN: {
       return BattleshipActions.P1_TURN;
     }

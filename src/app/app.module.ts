@@ -13,12 +13,14 @@ import { SocketIoModule, SocketIoConfig } from "ngx-socket-io";
 import { GameService } from "src/app/services/game.service";
 import { GameOverComponent } from "./components/game-over/game-over.component";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { LoadingComponent } from './components/loading/loading.component';
+import { MainMenuComponent } from './components/main-menu/main-menu.component';
 
 const config: SocketIoConfig = { url: "http://174.138.111.227:8000", options: {} };
 // const config: SocketIoConfig = { url: localStorage.getItem('socket_address') , options: {} };
 
 @NgModule({
-  declarations: [AppComponent, GameScreenComponent, GameOverComponent],
+  declarations: [AppComponent, GameScreenComponent, GameOverComponent, LoadingComponent, MainMenuComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
