@@ -356,7 +356,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       img: "./assets/ship4",
       imgV: "./assets/ship4-v",
       style: {
-        background: "url(./assets/ship4.PNG)"
+        background: "url(./assets/ship4.png)"
       }
     };
 
@@ -369,7 +369,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       img: "./assets/ship4-1",
       imgV: "./assets/ship4-1-v",
       style: {
-        background: "url(./assets/ship4-1.PNG)"
+        background: "url(./assets/ship4-1.png)"
       }
     };
     let ship2: Ship = {
@@ -381,7 +381,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       img: "./assets/ship3",
       imgV: "./assets/ship3-v",
       style: {
-        background: "url(./assets/ship3.PNG)"
+        background: "url(./assets/ship3.png)"
       }
     };
     let ship3: Ship = {
@@ -393,7 +393,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       img: "./assets/ship3-1",
       imgV: "./assets/ship3-1-v",
       style: {
-        background: "url(./assets/ship3-1.PNG)"
+        background: "url(./assets/ship3-1.png)"
       }
     };
     let ship4: Ship = {
@@ -405,7 +405,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       img: "./assets/ship3-1",
       imgV: "./assets/ship3-1-v",
       style: {
-        background: "url(./assets/ship3-1.PNG)"
+        background: "url(./assets/ship3-1.png)"
       }
     };
     let ship5: Ship = {
@@ -417,7 +417,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       img: "./assets/ship2",
       imgV: "./assets/ship2-v",
       style: {
-        background: "url(./assets/ship2.PNG)"
+        background: "url(./assets/ship2.png)"
       }
     };
     let ship6: Ship = {
@@ -429,7 +429,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       img: "./assets/ship2",
       imgV: "./assets/ship2-v",
       style: {
-        background: "url(./assets/ship2.PNG)"
+        background: "url(./assets/ship2.png)"
       }
     };
     let ship7: Ship = {
@@ -441,7 +441,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       img: "./assets/ship2",
       imgV: "./assets/ship2-v",
       style: {
-        background: "url(./assets/ship2.PNG)"
+        background: "url(./assets/ship2.png)"
       }
     };
     let ship8: Ship = {
@@ -453,7 +453,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       img: "./assets/ship2",
       imgV: "./assets/ship2-v",
       style: {
-        background: "url(./assets/ship2.PNG)"
+        background: "url(./assets/ship2.png)"
       }
     };
     let ship9: Ship = {
@@ -465,7 +465,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       img: "./assets/ship5",
       imgV: "./assets/ship5-v",
       style: {
-        background: "url(./assets/ship5.PNG)"
+        background: "url(./assets/ship5.png)"
       }
     };
 
@@ -740,7 +740,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
         let firstTileIndex = this.playerBoardTiles.indexOf(tile);
 
         tile.isHighlighted = true;
-        this.playerBoardContext.fillStyle = "rgb(85, 148, 173)";
+        this.playerBoardContext.fillStyle = "#faf7f2";
 
         let prevShip: PrevShip = {
           row: dropRow,
@@ -769,7 +769,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
           }
 
           let img = new Image();
-          img.src = this.allShips[this.curShipId].imgV + ".PNG";
+          img.src = this.allShips[this.curShipId].imgV + ".png";
           this.playerBoardContext.drawImage(img, tile.topX, tile.topY);
         } else {
           this.playerBoardContext.fillRect(
@@ -796,7 +796,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
           }
 
           let img = new Image();
-          img.src = this.allShips[this.curShipId].img + ".PNG";
+          img.src = this.allShips[this.curShipId].img + ".png";
           this.playerBoardContext.drawImage(img, tile.topX, tile.topY);
         }
 
@@ -866,11 +866,11 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
     if (this.allShips[this.curShipId].isVertical) {
       this.allShips[this.curShipId].style = {
-        background: "url(" + this.allShips[this.curShipId].imgV + ".PNG)"
+        background: "url(" + this.allShips[this.curShipId].imgV + ".png)"
       };
     } else {
       this.allShips[this.curShipId].style = {
-        background: "url(" + this.allShips[this.curShipId].img + ".PNG)"
+        background: "url(" + this.allShips[this.curShipId].img + ".png)"
       };
     }
   }
