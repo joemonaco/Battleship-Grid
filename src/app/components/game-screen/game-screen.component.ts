@@ -6,6 +6,7 @@ import {
   OnInit,
   OnDestroy
 } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { Tile } from "../../models/tile";
 import { Ship } from "../../models/ship";
@@ -13,7 +14,7 @@ import { LinkedList } from "../../models/linkedList";
 import { PrevShip } from "../../models/prevship";
 import { DragulaService } from "ng2-dragula";
 
-import { Observable } from "rxjs";
+import { Observable, Subscription } from "rxjs";
 import { Store } from "@ngrx/store";
 import { GameState } from "../../state-management/reducers/battleship.reducer";
 
@@ -30,6 +31,9 @@ import {
   SafeUrl
 } from "@angular/platform-browser";
 
+@Injectable({
+  providedIn: "root"
+})
 @Component({
   selector: "app-game-screen",
   templateUrl: "./game-screen.component.html",
@@ -126,17 +130,18 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     private router: Router,
     private _sanitizer: DomSanitizer
   ) {
+    this.gameService.register(this.getUUID());
     //Creating the dragula group to make ships draggable
     // this.gameService.setID();
     // console.log(this.gameService.userID);
   }
 
-  isReadySub: any;
-  isWinnerSub: any;
-  getPlayerSub: any;
-  getTurnSub: any;
-  getHitSub: any;
-  updateBoardSub: any;
+  isReadySub: Subscription;
+  isWinnerSub: Subscription;
+  getPlayerSub: Subscription;
+  getTurnSub: Subscription;
+  getHitSub: Subscription;
+  updateBoardSub: Subscription;
 
   AIshots: Tile[] = [];
 
@@ -215,7 +220,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       this.curState = state;
       if (state == "P2_TURN") {
         let randIndex = Math.floor(Math.random() * this.availableShots.length);
-        console.log("randIndex", randIndex);
+        // console.log("randIndex", randIndex);
         let listElement = this.availableShots.remove(randIndex);
 
         let tile = this.playerBoardTiles.find(
@@ -234,7 +239,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
     // console.log
     this.isReadySub = this.gameService.checkReady().subscribe(isReady => {
-      console.log(isReady);
+      // console.log(isReady);
       if (isReady) {
         this.showLoading = false;
         this.store.dispatch(new BattleshipActions.GameReady());
@@ -253,7 +258,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     });
 
     this.isWinnerSub = this.gameService.isWinner().subscribe(player => {
-      console.log(player, " is winner");
+      // console.log(player, " is winner");
       this.winner = true;
       // if (player == this.player) {
       this.store.dispatch(new BattleshipActions.GameOver());
@@ -299,7 +304,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
         if (data.hit) {
           this.playHitAudio();
-          console.log("hit true for player", data.uuid);
+          // console.log("hit true for player", data.uuid);
           this.enemyBoardContext.fillStyle = "red";
           this.changeBoardStyle(1);
           setTimeout(() => {
@@ -307,7 +312,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
           }, 300);
         } else {
           this.playMissAudio();
-          console.log("hit false for player", data.uuid);
+          // console.log("hit false for player", data.uuid);
           this.enemyBoardContext.fillStyle = "lightgray";
         }
 
@@ -330,7 +335,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       .updatePlayerBoard()
       .subscribe(data => {
         if (data.uuid == this.gameService.userID) {
-          console.log("update board");
+          // console.log("update board");
 
           if (data.hit) {
             this.playerBoardContext.fillStyle = "rgba(255, 0, 0, 0.3)";
@@ -342,8 +347,6 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
           this.playerBoardContext.stroke();
         }
       });
-
-    this.gameService.register(this.getUUID());
   }
 
   createShips() {
@@ -483,17 +486,25 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     this.allShips.push(ship9);
   }
 
+  // destroyEverything() {
+  //   this.isReadySub.unsubscribe();
+  //   this.isWinnerSub.unsubscribe();
+  //   this.getPlayerSub.unsubscribe();
+  //   this.getTurnSub.unsubscribe();
+  //   this.getHitSub.unsubscribe();
+  //   this.updateBoardSub.unsubscribe();
+  // }
+
   ngOnDestroy() {
     //   //Called once, before the instance is destroyed.
     //   //Add 'implements OnDestroy' to the class.
-    //   console.log("in destory");
-    // this.gameService.resetGame();
-    //   this.isReadySub.unsubcribe();
-    //   this.isWinnerSub.unsubcribe();
-    //   this.getPlayerSub.unsubcribe();
-    //   this.getTurnSub.unsubcribe();
-    //   this.getHitSub.unsubcribe();
-    //   this.updateBoardSub.unsubcribe();
+    console.log("in destory");
+    // this.isReadySub.unsubscribe();
+    // this.isWinnerSub.unsubscribe();
+    // this.getPlayerSub.unsubscribe();
+    // this.getTurnSub.unsubscribe();
+    // this.getHitSub.unsubscribe();
+    // this.updateBoardSub.unsubscribe();
   }
 
   reset() {
@@ -527,7 +538,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
     this.drawGrid(true);
 
-    console.log(this.playerBoardTiles);
+    // console.log(this.playerBoardTiles);
   }
 
   /** Draws tiles on the grid for the player */
@@ -654,7 +665,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
           this.hideShip[prevShip.index] = false;
         }
       }
-      console.log("PREV SHIPS", this.prevShips);
+      // console.log("PREV SHIPS", this.prevShips);
       this.prevShips.pop();
       // this.playerBoardContext.strokeStyle = "white";
       this.playerBoardContext.stroke();
@@ -667,7 +678,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     let boundingRectBoard = document
       .getElementById("board")
       .getBoundingClientRect();
-    console.log(boundingRectBoard);
+    // console.log(boundingRectBoard);
 
     if (
       this.shipXPos > boundingRectBoard.left &&
@@ -680,8 +691,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
         let col = Math.trunc((this.shipXPos - boundingRectBoard.left) / 40);
         let row = Math.trunc((this.shipYPos - boundingRectBoard.top) / 40);
 
-        console.log(row);
-        console.log(col);
+        // console.log(row);
+        // console.log(col);
         this.mouseDrop(row, col);
       }
     }
@@ -691,9 +702,9 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   shipYPos = -1;
 
   touchMove(e) {
-    console.log("PAGE X", Math.trunc(e.touches[0].pageX));
-    console.log("PAGE Y", Math.trunc(e.touches[0].pageY));
-    console.log("TOUCH");
+    // console.log("PAGE X", Math.trunc(e.touches[0].pageX));
+    // console.log("PAGE Y", Math.trunc(e.touches[0].pageY));
+    // console.log("TOUCH");
     this.shipXPos = e.touches[0].pageX;
     this.shipYPos = e.touches[0].pageY;
     //  console.log(e);
@@ -708,7 +719,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     // console.log("player number is", this.player);
     // e.preventDefault();
 
-    console.log("MOUSE DROP");
+    // console.log("MOUSE DROP");
     // // console.log(target);
 
     // console.log(e);
@@ -827,10 +838,10 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
           return false;
         }
         //Checks to make sure that ship isnt going off the board
-        console.log(
-          "firstIndex + i",
-          this.playerBoardTiles[firstTileIndex + i].row
-        );
+        // console.log(
+        //   "firstIndex + i",
+        //   this.playerBoardTiles[firstTileIndex + i].row
+        // );
         if (this.playerBoardTiles[firstTileIndex + i].row > 9) {
           return false;
         }
@@ -842,10 +853,10 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     } else {
       let indexOffset = 10;
       for (let i = 1; i < this.curShipLen; i++) {
-        console.log(
-          "firstTileIndex + indexOffset",
-          firstTileIndex + indexOffset
-        );
+        // console.log(
+        //   "firstTileIndex + indexOffset",
+        //   firstTileIndex + indexOffset
+        // );
         if (this.playerBoardTiles[firstTileIndex + indexOffset].isHighlighted) {
           return false;
         }
@@ -876,7 +887,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   }
 
   shipClicked(event) {
-    console.log("ship clicked");
+    // console.log("ship clicked");
     // event.preventDefault();
     this.didSelectShip = !this.didSelectShip;
     this.curShipId = event.target.id;
@@ -887,7 +898,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   }
 
   doSomething() {
-    console.log("DRAGGING");
+    // console.log("DRAGGING");
   }
 
   /** When user clicks ready */
@@ -907,7 +918,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       this.createAIBoard();
     }
 
-    console.log("PLAYER BOARD", this.playerBoardTiles);
+    // console.log("PLAYER BOARD", this.playerBoardTiles);
   }
 
   /** When the user selects a tile on the enemy board */
@@ -993,7 +1004,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       col++;
     }
 
-    console.log("AI BOARd", this.AIboard);
+    // console.log("AI BOARd", this.AIboard);
 
     let AIrows: number[] = [];
     let AIcols: number[] = [];
@@ -1007,11 +1018,11 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
         randCol = Math.floor(Math.random() * 9);
       }
 
-      console.log("ADDING SHIP: ", size);
+      // console.log("ADDING SHIP: ", size);
     });
 
-    console.log("AI BOARd", this.AIboard);
-    console.log("AI SHIPS", this.AIshipTiles);
+    // console.log("AI BOARd", this.AIboard);
+    // console.log("AI SHIPS", this.AIshipTiles);
 
     this.gameService.sendAIboard(this.AIboard);
     this.AIboard = [];
@@ -1029,7 +1040,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
       } else {
         let firstTileIndex = this.AIboard.indexOf(tile);
         let vert = Math.round(Math.random());
-        console.log("vert is", vert);
+        // console.log("vert is", vert);
         if (vert == 0) {
           for (let i = 0; i < size; i++) {
             //Checks to make sure that ship isnt going off the board
@@ -1044,13 +1055,13 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
         } else {
           let indexOffset = 10;
           for (let i = 0; i < size; i++) {
+            // console.log(
+            //   "firstTileIndex + indexOffset",
+            //   this.AIboard[firstTileIndex + indexOffset]
+            // );
             if (row + size > 9 || col + size > 9) {
               return false;
             }
-            console.log(
-              "firstTileIndex + indexOffset",
-              this.AIboard[firstTileIndex + indexOffset]
-            );
 
             if (this.AIboard[firstTileIndex + indexOffset].isHighlighted) {
               return false;

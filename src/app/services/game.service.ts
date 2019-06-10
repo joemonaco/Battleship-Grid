@@ -44,6 +44,9 @@ export class GameService {
   }
 
   resetGame() {
+    this.singlePlayer = null;
+    this.userID = "";
+    this.winningID = "";
     this.socket.emit("reset");
   }
 

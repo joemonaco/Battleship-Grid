@@ -5,6 +5,7 @@ import { LoadingComponent } from "../app/components/loading/loading.component";
 import { MainMenuComponent } from "../app/components/main-menu/main-menu.component";
 import { GameOverComponent } from "../app/components/game-over/game-over.component";
 import { AppComponent } from "../app/app.component";
+import { GameInProgressComponent } from "../app/components/game-in-progress/game-in-progress.component";
 
 const routes: Routes = [
   {
@@ -22,6 +23,10 @@ const routes: Routes = [
   {
     path: "loading",
     component: LoadingComponent
+  },
+  {
+    path: "inProgress",
+    component: GameInProgressComponent
   },
   {
     path: "",

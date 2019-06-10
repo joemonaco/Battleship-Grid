@@ -17,7 +17,7 @@ export class LinkedList {
   append(element) {
     let newNode = new Node(element);
 
-    console.log("NEW NODE: ", newNode);
+    // console.log("NEW NODE: ", newNode);
     let current;
 
     if (this.head == null) {
@@ -48,7 +48,7 @@ export class LinkedList {
       } else {
         while (count != index) {
           prev = current;
-          console.log(current);
+          // console.log(current);
           current = current.next;
           count++;
         }
