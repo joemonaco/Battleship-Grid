@@ -48,7 +48,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   fadeIn: any;
   myDelay = 9999999;
 
-  showLoading = false;
+  // showLoading = false;
 
   /** Template reference to the canvas element */
   @ViewChild("playerBoardEl") playerBoardEl: ElementRef;
@@ -80,21 +80,21 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   enemyTilesHit = 0;
 
   //For Hiding ships after they are placed, false means ship not placed
-  hideShip = [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-  ];
+  // hideShip = [
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false
+  // ];
 
   /** FOR TESTING ONLY */
-  // hideShip = [true, true, true, true, true, true, true, true, true, false];
+  hideShip = [true, true, true, true, true, true, true, true, true, false];
 
   allShips: Ship[] = [];
   prevShips: PrevShip[] = [];
@@ -130,7 +130,6 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     private router: Router,
     private _sanitizer: DomSanitizer
   ) {
-    this.gameService.register(this.getUUID());
     //Creating the dragula group to make ships draggable
     // this.gameService.setID();
     // console.log(this.gameService.userID);
@@ -142,6 +141,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   getTurnSub: Subscription;
   getHitSub: Subscription;
   updateBoardSub: Subscription;
+  statusSub: Subscription;
 
   AIshots: Tile[] = [];
 
@@ -186,14 +186,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   }
 
   ngOnInit() {
-    //
     this.createShips();
-
-    // this.dragulaService.drag("ship")
-    //   .subscribe(({ name, el, source }) => {
-    //    document.getElementById(el.id)
-    //   })
-
+    console.log("IN INIT");
     this.dragulaService.createGroup("ship", {
       removeOnSpill: false,
       revertOnSpill: true,
@@ -218,7 +212,8 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
     this.store.select("battleship").subscribe(state => {
       this.curState = state;
-      if (state == "P2_TURN") {
+      if (state == "P2_TURN" && this.gameService.singlePlayer) {
+        console.log("state == P2_TURN");
         let randIndex = Math.floor(Math.random() * this.availableShots.length);
         // console.log("randIndex", randIndex);
         let listElement = this.availableShots.remove(randIndex);
@@ -229,60 +224,29 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
             selectedTile.col == listElement.col
         );
 
-        this.AIshots.push(tile);
         this.gameService.checkEnemyBoardAI(tile.row, tile.col);
       }
       if (state == "WAITING") {
+        console.log("WAITNG");
         this.router.navigate(["/loading"]);
       }
     });
 
-    // console.log
-    this.isReadySub = this.gameService.checkReady().subscribe(isReady => {
-      // console.log(isReady);
-      if (isReady) {
-        this.showLoading = false;
-        this.store.dispatch(new BattleshipActions.GameReady());
-        this.gameStarted = true;
-        this.myDelay = 2;
-        if (this.player == 1) {
-          this.isTurn = true;
-        }
-      }
-    });
-
-    this.gameService.checkGameStatus().subscribe(gameInProgress => {
-      if (gameInProgress) {
-        this.store.dispatch(new BattleshipActions.Waiting());
-      }
-    });
-
-    this.isWinnerSub = this.gameService.isWinner().subscribe(player => {
-      // console.log(player, " is winner");
-      this.winner = true;
-      // if (player == this.player) {
-      this.store.dispatch(new BattleshipActions.GameOver());
-      this.router.navigate(["/game-over"]);
-
-      // }
-    });
-
-    this.getPlayerSub = this.gameService.getPlayer().subscribe(data => {
-      console.log("getting data to be player: ", data);
-      this.player = data;
-    });
-
     this.getTurnSub = this.gameService.getTurn().subscribe(turn => {
+      console.log("turn", turn);
       // console.log(turn);
       if (turn == "P1_TURN") {
+        console.log("Player 1 Turn, in get Turn Sub");
         this.store.dispatch(new BattleshipActions.Switching());
         this.store.dispatch(new BattleshipActions.Player1Turn());
+
         if (this.player == 1) {
           this.isTurn = true;
         } else {
           this.isTurn = false;
         }
       } else if (turn == "P2_TURN") {
+        console.log("Player 2 Turn, in get Turn Sub");
         this.store.dispatch(new BattleshipActions.Switching());
         this.store.dispatch(new BattleshipActions.Player2Turn());
         if (this.player == 2) {
@@ -292,61 +256,14 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
         }
       }
     });
+  }
 
-    this.getHitSub = this.gameService.getHit().subscribe(data => {
-      if (data.uuid == this.gameService.userID) {
-        // Getting the tile on the enemy board to set it to higlighted
-        let enemyTile = this.enemyBoardTiles.find(
-          selectedTile =>
-            selectedTile.row == data.row && selectedTile.col == data.col
-        );
-        enemyTile.isHighlighted = true;
+  resetVariables() {
+    console.log("in reset Variables");
 
-        if (data.hit) {
-          this.playHitAudio();
-          // console.log("hit true for player", data.uuid);
-          this.enemyBoardContext.fillStyle = "red";
-          this.changeBoardStyle(1);
-          setTimeout(() => {
-            this.enemyBoardStyle = {};
-          }, 300);
-        } else {
-          this.playMissAudio();
-          // console.log("hit false for player", data.uuid);
-          this.enemyBoardContext.fillStyle = "lightgray";
-        }
-
-        this.enemyBoardContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
-        this.enemyBoardContext.stroke();
-      } else {
-        if (data.hit) {
-          this.playHitAudio();
-          this.changeBoardStyle(0);
-          setTimeout(() => {
-            this.boardStyle = {};
-          }, 300);
-        } else {
-          this.playMissAudio();
-        }
-      }
-    });
-
-    this.updateBoardSub = this.gameService
-      .updatePlayerBoard()
-      .subscribe(data => {
-        if (data.uuid == this.gameService.userID) {
-          // console.log("update board");
-
-          if (data.hit) {
-            this.playerBoardContext.fillStyle = "rgba(255, 0, 0, 0.3)";
-          } else {
-            this.playerBoardContext.fillStyle = "lightgray";
-          }
-
-          this.playerBoardContext.fillRect(data.topX, data.topY, 40, 40);
-          this.playerBoardContext.stroke();
-        }
-      });
+    // this.readyClicked = false;
+    // this.showLoading = false;
+    // this.gameStarted = false;
   }
 
   createShips() {
@@ -486,14 +403,13 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     this.allShips.push(ship9);
   }
 
-  // destroyEverything() {
-  //   this.isReadySub.unsubscribe();
-  //   this.isWinnerSub.unsubscribe();
-  //   this.getPlayerSub.unsubscribe();
-  //   this.getTurnSub.unsubscribe();
-  //   this.getHitSub.unsubscribe();
-  //   this.updateBoardSub.unsubscribe();
-  // }
+  destroyEverything() {
+    // this.isWinnerSub.unsubscribe();
+    // this.getTurnSub.unsubscribe();
+    // this.getHitSub.unsubscribe();
+    // this.updateBoardSub.unsubscribe();
+    // this.statusSub.unsubscribe();
+  }
 
   ngOnDestroy() {
     //   //Called once, before the instance is destroyed.
@@ -508,12 +424,13 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   }
 
   reset() {
+    console.log("GAME SCREEN RESET");
     this.gameService.resetGame();
     this.gameService.register(this.gameService.userID);
   }
 
   getUUID(): String {
-    // console.log("in getUUID");
+    console.log("in getUUID");
     length = 32;
     var result = "";
     var characters =
@@ -527,6 +444,40 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit() {
+    console.log("avaluble shots", this.availableShots);
+    this.setUpGame();
+
+    if (!this.gameService.singlePlayer) {
+      this.getTurnSub = this.gameService.getTurn().subscribe(turn => {
+        console.log("turn", turn);
+        // console.log(turn);
+        if (turn == "P1_TURN") {
+          console.log("Player 1 Turn, in get Turn Sub");
+          this.store.dispatch(new BattleshipActions.Switching());
+          this.store.dispatch(new BattleshipActions.Player1Turn());
+
+          if (this.player == 1) {
+            this.isTurn = true;
+          } else {
+            this.isTurn = false;
+          }
+        } else if (turn == "P2_TURN") {
+          console.log("Player 2 Turn, in get Turn Sub");
+          this.store.dispatch(new BattleshipActions.Switching());
+          this.store.dispatch(new BattleshipActions.Player2Turn());
+          if (this.player == 2) {
+            this.isTurn = true;
+          } else {
+            this.isTurn = false;
+          }
+        }
+      });
+    }
+    // console.log(this.playerBoardTiles);
+  }
+
+  setUpGame() {
+    this.gameService.register(this.getUUID());
     this.playerBoardContext = (this.playerBoardEl
       .nativeElement as HTMLCanvasElement).getContext("2d");
 
@@ -538,7 +489,104 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
     this.drawGrid(true);
 
-    // console.log(this.playerBoardTiles);
+    this.isReadySub = this.gameService.checkReady().subscribe(isReady => {
+      console.log("isReady", isReady);
+      if (isReady) {
+        console.log("GAME IS READY");
+        // this.showLoading = false;
+        this.store.dispatch(new BattleshipActions.GameReady());
+        this.gameStarted = true;
+        console.log("gmaeStarted readySUb", this.gameStarted);
+        this.myDelay = 2;
+        if (this.player == 1) {
+          this.isTurn = true;
+          this, (this.gameStarted = true);
+        }
+      }
+    });
+
+    this.statusSub = this.gameService
+      .checkGameStatus()
+      .subscribe(gameInProgress => {
+        console.log("GAME IN PROGRESS");
+        if (gameInProgress) {
+          this.store.dispatch(new BattleshipActions.Waiting());
+          // this.statusSub.unsubscribe();
+        }
+      });
+
+    this.isWinnerSub = this.gameService.isWinner().subscribe(player => {
+      // console.log(player, " is winner");
+      this.winner = true;
+      // if (player == this.player) {
+      this.store.dispatch(new BattleshipActions.GameOver());
+      // this.destroyEverything();
+      this.router.navigate(["/game-over"]);
+
+      // }
+    });
+
+    this.getHitSub = this.gameService.getHit().subscribe(data => {
+      if (data.uuid == this.gameService.userID) {
+        // Getting the tile on the enemy board to set it to higlighted
+        let enemyTile = this.enemyBoardTiles.find(
+          selectedTile =>
+            selectedTile.row == data.row && selectedTile.col == data.col
+        );
+        enemyTile.isHighlighted = true;
+
+        if (data.hit) {
+          this.playHitAudio();
+          // console.log("hit true for player", data.uuid);
+          this.enemyBoardContext.fillStyle = "red";
+          this.changeBoardStyle(1);
+          setTimeout(() => {
+            this.enemyBoardStyle = {};
+          }, 300);
+        } else {
+          this.playMissAudio();
+          // console.log("hit false for player", data.uuid);
+          this.enemyBoardContext.fillStyle = "lightgray";
+        }
+
+        this.enemyBoardContext.fillRect(enemyTile.topX, enemyTile.topY, 40, 40);
+        this.enemyBoardContext.stroke();
+      } else {
+        if (data.hit) {
+          this.playHitAudio();
+          this.changeBoardStyle(0);
+          setTimeout(() => {
+            this.boardStyle = {};
+          }, 300);
+        } else {
+          this.playMissAudio();
+        }
+      }
+    });
+
+    this.updateBoardSub = this.gameService
+      .updatePlayerBoard()
+      .subscribe(data => {
+        if (data.uuid == this.gameService.userID) {
+          // console.log("update board");
+
+          if (data.hit) {
+            this.playerBoardContext.fillStyle = "rgba(255, 0, 0, 0.3)";
+          } else {
+            this.playerBoardContext.fillStyle = "lightgray";
+          }
+
+          this.playerBoardContext.fillRect(data.topX, data.topY, 40, 40);
+          this.playerBoardContext.stroke();
+        }
+      });
+
+    this.getPlayerSub = this.gameService.getPlayer().subscribe(data => {
+      console.log("getting data to be player: ", data);
+      this.player = data;
+      console.log(this.player);
+      // this.getPlayerSub.unsubscribe();
+    });
   }
 
   /** Draws tiles on the grid for the player */
@@ -903,7 +951,7 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
 
   /** When user clicks ready */
   readyUp() {
-    this.showLoading = true;
+    // this.showLoading = true;
     this.allShipsPlaced = true;
     // console.log(this.playerShipTiles);
     this.drawGrid(false);
@@ -915,8 +963,14 @@ export class GameScreenComponent implements AfterViewInit, OnInit {
     this.gameService.sendBoard(this.playerBoardTiles);
 
     if (this.gameService.singlePlayer) {
+      this.AIboard = [];
+      this.AIshipTiles = [];
       this.createAIBoard();
+      this.gameStarted = true;
+      this.isTurn = true;
     }
+    console.log("gmaeStarted", this.gameStarted);
+    console.log("allSHipsPlaced", this.allShipsPlaced);
 
     // console.log("PLAYER BOARD", this.playerBoardTiles);
   }

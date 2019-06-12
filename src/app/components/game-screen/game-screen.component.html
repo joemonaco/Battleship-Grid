@@ -1,7 +1,9 @@
-<div class="loading" [hidden]="!showLoading">
+<!-- <div class="loading" [hidden]="!showLoading">
   <app-loading></app-loading>
-</div>
-
+</div> -->
+<h1>GAME STARTED {{ gameStarted }}</h1>
+<h1>PLAYER {{ player }}</h1>
+<h1>TURN {{ isTurn }}</h1>
 <div class="game" [hidden]="showLoading">
   <div class="turn" [hidden]="!gameStarted">
     <ng-container *ngIf="isTurn; else notTurn">

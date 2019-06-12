@@ -49,6 +49,7 @@ export class GameOverComponent implements OnInit {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.
     // this.gameScreen.destroyEverything();
+    this.gameScreen.resetVariables();
     this.gameService.resetGame();
   }
 }

@@ -140,7 +140,7 @@ export class GameService {
     console.log("check turn");
     let observable = new Observable(observer => {
       this.socket.on("turn", data => {
-        console.log("turn", data);
+        // console.log("turn", data);
         observer.next(data);
       });
       return () => {};
@@ -151,10 +151,10 @@ export class GameService {
   getHit(): Observable<any> {
     let observable = new Observable(observer => {
       this.socket.on("hit", (data: any) => {
-        console.log("didHit row", data.row);
-        console.log("didHit col", data.col);
-        console.log("didHit", data.hit);
-        console.log("didHit UUID", data.uuid);
+        // console.log("didHit row", data.row);
+        // console.log("didHit col", data.col);
+        // console.log("didHit", data.hit);
+        // console.log("didHit UUID", data.uuid);
         // return { row: data.row, col: data.col, hit: data.hit, uuid: data.uuid };
         //If it was other players turn check if they hit or miss on your ship
         // if (data.uuid == this.userID) {
